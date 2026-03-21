@@ -489,28 +489,37 @@ function renderPipeline(){
 }
 
 function renderBdays(){
-  const u60=contacts.filter(c=>bdayInWindow(c)).sort((a,b)=>{
-    const ad=bdayTouched(a)?1:0,bd2=bdayTouched(b)?1:0;
-    if(ad!==bd2)return ad-bd2;
-    // Sort by days until bday (upcoming first), then days since (recent past last)
-    const da=dbu(a.dob)||999,db2=dbu(b.dob)||999;
-    return da-db2;
-  });
-  const u30=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;}).sort((a,b)=>{const ad=bdayTouched(a)?1:0,bd2=bdayTouched(b)?1:0;if(ad!==bd2)return ad-bd2;return (dbu(a.dob)||999)-(dbu(b.dob)||999);});
   const bdayTouched=c=>{
     if(!c.history||!c.history.length)return false;
-    const thisYear=new Date().getFullYear();
-    return c.history.some(h=>h.note&&h.note.includes('🎂')&&new Date(h.date).getFullYear()===thisYear);
+    const yr=new Date().getFullYear();
+    return c.history.some(h=>h.note&&h.note.includes('🎂')&&new Date(h.date).getFullYear()===yr);
   };
+  const sortFn=(a,b)=>{
+    const ad=bdayTouched(a)?1:0,bd=bdayTouched(b)?1:0;
+    if(ad!==bd)return ad-bd;
+    return (dbu(a.dob)||999)-(dbu(b.dob)||999);
+  };
+  const u60=contacts.filter(c=>bdayInWindow(c)).sort(sortFn);
+  const u30=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;}).sort(sortFn);
   const mk=c=>{
     const d=dbu(c.dob),ds=dbsi(c.dob);
-    const lbl=d===0?'TODAY!':d!==null&&d<=30?(d===1?'tomorrow':d+' days away'):(ds!==null&&ds>0&&ds<=7?ds+' days ago':'');
+    let lbl='';
+    if(d===0)lbl='TODAY!';
+    else if(d!==null&&d<=30)lbl=(d===1?'tomorrow':d+' days away');
+    else if(ds!==null&&ds>0&&ds<=7)lbl=ds+' days ago';
     const done=bdayTouched(c);
-    const checkmark=done?'<span style="font-size:11px;font-weight:600;color:#1a7a52;background:#e8f5ee;border-radius:20px;padding:2px 8px;margin-top:3px;display:inline-block">✓ sent</span>':'';
-    const opacity=done?'opacity:0.6;':'';
-    return'<div class="bcard" onclick="window.openBday(''+c.id+'')" style="cursor:pointer;'+opacity+'"><div class="bav">'+ini(c)+'</div><div><div class="bname">'+c.first+' '+c.last+'</div><div class="bdate">'+bds(c.dob)+'</div><div class="blbl">'+(done?'':lbl)+'</div>'+checkmark+'</div></div>';
+    const addr=[c.addr1,c.addr2,c.city,c.state,c.zip].filter(Boolean).join(', ');
+    let s='<div class="bcard" onclick="window.openBday(''+c.id+'')" style="cursor:pointer'+(done?';opacity:0.6':'')+'">';
+    s+='<div class="bav">'+ini(c)+'</div>';
+    s+='<div><div class="bname">'+c.first+' '+c.last+'</div>';
+    s+='<div class="bdate">'+bds(c.dob)+'</div>';
+    if(lbl&&!done)s+='<div class="blbl">'+lbl+'</div>';
+    if(addr)s+='<div style="font-size:11px;color:#8a5010;margin-top:2px">📍 '+addr+'</div>';
+    if(done)s+='<span style="font-size:11px;font-weight:600;color:#1a7a52;background:#e8f5ee;border-radius:20px;padding:2px 8px;margin-top:3px;display:inline-block">✓ sent</span>';
+    s+='</div></div>';
+    return s;
   };
-  document.getElementById('b60').innerHTML=u60.length?u60.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None in the next 60 days</p>';
+  document.getElementById('b60').innerHTML=u60.length?u60.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None in the next 30 days</p>';
   document.getElementById('bmo').innerHTML=u30.length?u30.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None this month</p>';
 }
 
@@ -727,7 +736,7 @@ window.openBday = function(id) {
   document.getElementById('bday-cphone').textContent = c.phone ? '📞 ' + c.phone : '';
   const addr = [c.addr1, c.addr2, c.city, c.state, c.zip].filter(Boolean).join(', ');
   document.getElementById('bday-caddr').textContent = addr ? '📍 ' + addr : '';
-  document.getElementById('bd-method').value = 'text';
+  document.getElementById('bd-method').value = 'card';
   document.getElementById('bd-note').value = '';
   document.getElementById('mbday').classList.add('open');
 };
