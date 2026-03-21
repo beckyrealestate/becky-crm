@@ -590,11 +590,11 @@ function renderStats() {
   const neverContacted=contacts.filter(c=>!c.lastTouch).length;
   document.getElementById('stats-row').innerHTML=`
     <div class="stat" onclick="setTab('all',document.getElementById('tab-all'))"><div class="stat-label">total contacts</div><div class="stat-value sv-g">${total}</div></div>
-    <div class="stat" onclick="setTab('pastdue',document.getElementById('tab-needs'))"><div class="stat-label">past due</div><div class="stat-value sv-r">${pastDue}</div></div>
     <div class="stat" onclick="setTab('never',document.getElementById('tab-needs'))"><div class="stat-label">never contacted</div><div class="stat-value sv-r">${neverContacted}</div></div>
     <div class="stat" onclick="setTab('overdue',document.getElementById('tab-needs'))"><div class="stat-label">due soon</div><div class="stat-value sv-o">${soon}</div></div>
-    <div class="stat" onclick="setTab('leads',document.getElementById('tab-leads'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">${lc}</div></div>
-    <div class="stat" onclick="setTab('bday',document.getElementById('tab-bday'))"><div class="stat-label">bdays (30d)</div><div class="stat-value sv-b">${bc}</div></div>`;
+    <div class="stat" onclick="setTab('pastdue',document.getElementById('tab-needs'))"><div class="stat-label">past due</div><div class="stat-value sv-r">${pastDue}</div></div>
+    <div class="stat" onclick="setTab('bday',document.getElementById('tab-bday'))"><div class="stat-label">bdays (30d)</div><div class="stat-value sv-b">${bc}</div></div>
+    <div class="stat" onclick="setTab('leads',document.getElementById('tab-leads'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">${lc}</div></div>`;
   document.getElementById('b-over').textContent=ov;
   document.getElementById('b-leads').textContent=lc;
   document.getElementById('b-bday').textContent=bc;
@@ -876,4 +876,3 @@ load();
 </script>
 </body>
 </html>
-
