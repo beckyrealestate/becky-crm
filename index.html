@@ -629,300 +629,35 @@ function renderStats() {
 window.renderContacts = function() {
   const list=window.filtered(), grid=document.getElementById('contact-grid');
   if(!list.length){grid.innerHTML='<div class="empty"><p>no contacts match</p></div>';return;}
-  grid.innerHTML=list.map(c=>{
+  let out = '';
+  list.forEach(c => {
     const ts=tss(c), d=dbu(c.dob), isBd=d!==null&&d<=14;
-    const note=c.notes?`<div class="cnote">${c.notes.substring(0,100)}${c.notes.length>100?'…':''}</div>`:'';
-    const ll=c.history&&c.history.length?`<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:2px">${c.history[c.history.length-1].method}: ${(c.history[c.history.length-1].note||'').substring(0,45)}</div>`:'';
+    const note=c.notes?'<div class="cnote">'+c.notes.substring(0,100)+(c.notes.length>100?'…':'')+'</div>':'';
+    const ll=c.history&&c.history.length?'<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:2px">'+c.history[c.history.length-1].method+': '+(c.history[c.history.length-1].note||'').substring(0,45)+'</div>':'';
     const addr=[c.addr1,c.city,c.state,c.zip].filter(Boolean).join(', ');
-    const chips=`<div class="chips">
-      <span class="cseg seg-${c.seg||'other'}">${segL(c.seg)}</span>
-      ${c.spouse?`<span class="spouse-chip">+ ${c.spouse}</span>`:''}
-      ${isBd?`<span class="bday-chip">🎂 ${d===0?'today!':d===1?'tomorrow':d+'d'}</span>`:''}
-      ${c.isSpouse?`<span style="font-size:10px;background:#f0f8ff;color:#1a5da0;border-radius:20px;padding:2px 8px;">spouse</span>`:''}
-    </div>`;
-    return `<div class="${cardCls(c)}">
-      <div class="ctop"><div class="av${isBd?' bday':''}">${ini(c)}</div>
-        <div class="cinfo"><div class="cname">${c.first} ${c.last}</div>${chips}</div></div>
-      <div class="cdetails">
-        ${c.phone?`<div>📞 ${c.phone}</div>`:''}
-        ${c.email?`<div>✉ ${c.email}</div>`:''}
-        ${addr?`<div>📍 ${addr}</div>`:''}
-        ${fuLine(c)}
-        ${ll}
-      </div>
-      <div class="ctouch"><span class="tl">last touch</span><span class="tv ${ts.cls}">${ts.label}</span></div>
-      <div class="cbtns">
-        <button class="cbtn" onclick="window.openEdit('${c.id}')">edit</button>
-        <button class="cbtn touch" onclick="window.openTouch('${c.id}')">log touch</button>
-        <button class="cbtn" onclick="window.openHist('${c.id}')">history</button>
-        <button class="cbtn del" onclick="window.delC('${c.id}')">delete</button>
-      </div>${note}
-    </div>`;
-  }).join('');
+    const fu=fuLine(c);
+    let chips='<div class="chips"><span class="cseg seg-'+(c.seg||'other')+'">'+segL(c.seg)+'</span>';
+    if(c.spouse) chips+='<span class="spouse-chip">+ '+c.spouse+'</span>';
+    if(isBd) chips+='<span class="bday-chip">🎂 '+(d===0?'today!':d===1?'tomorrow':d+'d')+'</span>';
+    if(c.isSpouse) chips+='<span style="font-size:10px;background:#f0f8ff;color:#1a5da0;border-radius:20px;padding:2px 8px;">spouse</span>';
+    chips+='</div>';
+    let card='<div class="'+(ts.p===0?'card overdue':ts.p===1?'card due-soon':'card')+'">';
+    card+='<div class="ctop"><div class="av'+(isBd?' bday':'')+'">'+ini(c)+'</div>';
+    card+='<div class="cinfo"><div class="cname">'+c.first+' '+c.last+'</div>'+chips+'</div></div>';
+    card+='<div class="cdetails">';
+    if(c.phone) card+='<div>📞 '+c.phone+'</div>';
+    if(c.email) card+='<div>✉ '+c.email+'</div>';
+    if(addr) card+='<div>📍 '+addr+'</div>';
+    card+=ll+fu+'</div>';
+    card+='<div class="ctouch"><span class="tl">last touch</span><span class="tv '+ts.cls+'">'+ts.label+'</span></div>';
+    card+='<div class="cbtns">';
+    card+='<button class="cbtn" onclick="window.openEdit(''+c.id+'')">edit</button>';
+    card+='<button class="cbtn touch" onclick="window.openTouch(''+c.id+'')">log touch</button>';
+    card+='<button class="cbtn" onclick="window.openHist(''+c.id+'')">history</button>';
+    card+='<button class="cbtn del" onclick="window.delC(''+c.id+'')">delete</button>';
+    card+='</div>'+note+'</div>';
+    out+=card;
+  });
+  grid.innerHTML=out;
 }
 
-function renderPipeline() {
-  const stages=['aware','interested','active','closed'], labels={aware:'Aware',interested:'Interested',active:'Active',closed:'Closed ✓'};
-  document.getElementById('pipeline').innerHTML=stages.map(s=>{
-    const sl=leads.filter(l=>l.stage===s);
-    return `<div class="pcol"><div class="pcol-hd">${labels[s]}<span class="pcount">${sl.length}</span></div>
-      ${sl.map(l=>`<div class="plead">
-        <div class="plead-name">${l.contactName}</div>
-        <div class="plead-meta">${l.type} · ${l.note||''}</div>
-        <div class="plead-btns">
-          <select class="pbtn" onchange="window.pStage('${l.id}',this.value)" style="cursor:pointer;flex:1">
-            <option value="aware" ${l.stage==='aware'?'selected':''}>aware</option>
-            <option value="interested" ${l.stage==='interested'?'selected':''}>interested</option>
-            <option value="active" ${l.stage==='active'?'selected':''}>active</option>
-            <option value="closed" ${l.stage==='closed'?'selected':''}>closed</option>
-          </select>
-          <button class="pbtn" onclick="window.pDel('${l.id}')">remove</button>
-        </div></div>`).join('')}
-      <button class="add-lead-row" onclick="window.openAddLead('${s}')">+ add</button>
-    </div>`;
-  }).join('');
-}
-
-function renderBdays() {
-  const u60=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=60;}).sort((a,b)=>dbu(a.dob)-dbu(b.dob));
-  const u30=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;});
-  const mk=c=>{const d=dbu(c.dob),lbl=d===0?'TODAY!':d===1?'tomorrow':d+' days';return `<div class="bcard" onclick="window.openHist('${c.id}')" style="cursor:pointer" title="View ${c.first}'s history"><div class="bav">${ini(c)}</div><div><div class="bname">${c.first} ${c.last}</div><div class="bdate">${bdayStr(c.dob)}</div><div class="bdays-lbl">${lbl}</div><div style="font-size:10px;color:#8a5010;margin-top:2px">tap to edit</div></div></div>`;};
-  document.getElementById('bday-60').innerHTML=u60.length?u60.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None in the next 60 days</p>';
-  document.getElementById('bday-month').innerHTML=u30.length?u30.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None this month</p>';
-}
-
-function calcBreakdown(price,commPct,refPct,splitPct,fedPct,statePct) {
-  const totalComm=price*(commPct/100), referral=totalComm*(refPct/100), afterRef=totalComm-referral;
-  const beckyCut=afterRef*(splitPct/100), brokerCut=afterRef-beckyCut;
-  const fedTax=beckyCut*(fedPct/100), stateTax=beckyCut*(statePct/100), totalTax=fedTax+stateTax;
-  return {totalComm,referral,afterRef,beckyCut,brokerCut,fedTax,stateTax,totalTax,finalPayout:beckyCut-totalTax};
-}
-
-function renderTransactions() {
-  const totalSales=transactions.reduce((s,t)=>s+t.price,0);
-  const totalPayout=transactions.reduce((s,t)=>s+calcBreakdown(t.price,t.commPct,t.refPct,t.splitPct,t.fedPct,t.statePct).finalPayout,0);
-  const totalTaxes=transactions.reduce((s,t)=>s+calcBreakdown(t.price,t.commPct,t.refPct,t.splitPct,t.fedPct,t.statePct).totalTax,0);
-  document.getElementById('trans-summary').innerHTML=`
-    <div class="stat" style="min-width:130px"><div class="stat-label">transactions</div><div class="stat-value sv-g">${transactions.length}</div></div>
-    <div class="stat" style="min-width:160px"><div class="stat-label">total sales volume</div><div class="stat-value sv-b" style="font-size:18px">${fmt(totalSales)}</div></div>
-    <div class="stat" style="min-width:160px"><div class="stat-label">total final payout</div><div class="stat-value sv-g" style="font-size:18px">${fmt(totalPayout)}</div></div>
-    <div class="stat" style="min-width:140px"><div class="stat-label">total taxes aside</div><div class="stat-value sv-r" style="font-size:18px">${fmt(totalTaxes)}</div></div>`;
-  const el=document.getElementById('trans-table');
-  if(!transactions.length){el.innerHTML='<div class="empty"><p>no transactions yet</p><p style="font-size:13px;margin-top:6px">click "+ add transaction" to record your first sale</p></div>';return;}
-  const sorted=[...transactions].sort((a,b)=>new Date(b.date||b.added)-new Date(a.date||a.added));
-  el.innerHTML=sorted.map(t=>{
-    const b=calcBreakdown(t.price,t.commPct,t.refPct,t.splitPct,t.fedPct,t.statePct);
-    const broker=100-t.splitPct;
-    const dateStr=t.date?new Date(t.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
-    return `<div style="background:white;border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:12px">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-        <div><div style="font-size:16px;font-weight:600">${t.client}</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:3px">${dateStr} · ${t.agent||'—'}</div>
-          ${t.notes?`<div style="font-size:12px;color:var(--muted);font-style:italic;margin-top:3px">${t.notes}</div>`:''}
-        </div>
-        <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:var(--em-d)">${fmt(b.finalPayout)}</div><div style="font-size:11px;color:var(--muted)">final payout</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;padding-top:12px;border-top:1px solid #f0f0f0;margin-bottom:12px">
-        ${[['sale price',fmt(t.price),''],['total commission',fmt(b.totalComm)+' ('+t.commPct+'%)',''],
-          t.refPct>0?['referral fee',fmt(b.referral)+' ('+t.refPct+'%)','#b83030']:null,
-          ['broker cut',fmt(b.brokerCut)+' ('+broker+'%)','#b83030'],
-          ['Becky keeps',fmt(b.beckyCut)+' ('+t.splitPct+'%)','var(--em)'],
-          ['federal tax',fmt(b.fedTax)+' ('+t.fedPct+'%)','#b83030'],
-          ['state tax',fmt(b.stateTax)+' ('+t.statePct+'%)','#b83030'],
-          ['total taxes',fmt(b.totalTax),'#b83030']
-        ].filter(Boolean).map(([label,val,color])=>`<div style="background:#f9fafb;border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px">${label}</div><div style="font-size:13px;font-weight:600;color:${color||'#1a1a1a'}">${val}</div></div>`).join('')}
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="cbtn" onclick="window.openEditTrans('${t.id}')">edit</button>
-        <button class="cbtn del" onclick="window.delTrans('${t.id}')">delete</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function render() { renderStats(); if(currentTab==='leads') renderPipeline(); else if(currentTab==='bday') renderBdays(); else if(currentTab==='transactions') renderTransactions(); else renderContacts(); }
-
-// ── TAB ───────────────────────────────────────────────────
-window.setTab = function(tab, el) {
-  currentTab=tab;
-  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
-  // For stat card sub-filters, highlight the needs touch tab
-  const contactSubTabs = ['overdue','pastdue','never','soon'];
-  if(contactSubTabs.includes(tab)) {
-    document.getElementById('tab-needs').classList.add('active');
-  } else if(el) {
-    el.classList.add('active');
-  }
-  document.getElementById('view-contacts').style.display=(tab==='leads'||tab==='bday'||tab==='transactions')?'none':'block';
-  document.getElementById('view-leads').style.display=tab==='leads'?'block':'none';
-  document.getElementById('view-bday').style.display=tab==='bday'?'block':'none';
-  document.getElementById('view-trans').style.display=tab==='transactions'?'block':'none';
-  // Show filter banner for sub-filters
-  const filterLabels = {overdue:'Showing: all contacts needing touch', pastdue:'Showing: past due contacts', never:'Showing: never contacted', soon:'Showing: due soon'};
-  const banner = document.getElementById('filter-banner');
-  if(filterLabels[tab]) {
-    document.getElementById('filter-label').textContent = filterLabels[tab];
-    banner.style.display = 'flex';
-  } else {
-    banner.style.display = 'none';
-  }
-  if(tab==='leads') renderPipeline(); else if(tab==='bday') renderBdays(); else if(tab==='transactions') renderTransactions(); else window.renderContacts();
-};
-
-// ── CONTACTS ──────────────────────────────────────────────
-window.openAdd = function() {
-  document.getElementById('mc-title').textContent='add contact'; document.getElementById('e-id').value='';
-  ['first','last','phone','email','addr1','addr2','city','state','zip','spouse','notes','dob','followup-date','followup-note'].forEach(f=>document.getElementById('e-'+f).value='');
-  document.getElementById('e-seg').value='personal'; document.getElementById('e-touch').value='90';
-  document.getElementById('m-contact').classList.add('open');
-};
-window.openEdit = function(id) {
-  const c=contacts.find(x=>x.id===id); if(!c) return;
-  document.getElementById('mc-title').textContent='edit contact'; document.getElementById('e-id').value=id;
-  ['first','last','phone','email','addr1','addr2','city','state','zip','spouse','notes'].forEach(f=>document.getElementById('e-'+f).value=c[f]||'');
-  document.getElementById('e-followup-date').value=c.followupDate||'';
-  document.getElementById('e-followup-note').value=c.followupNote||'';
-  document.getElementById('e-dob').value=c.dob||''; document.getElementById('e-seg').value=c.seg||'other'; document.getElementById('e-touch').value=c.touchGoal||'90';
-  document.getElementById('m-contact').classList.add('open');
-};
-window.cm = function(id) { document.getElementById(id).classList.remove('open'); };
-window.saveContact = async function() {
-  const first=document.getElementById('e-first').value.trim(); if(!first){alert('First name required');return;}
-  const eid=document.getElementById('e-id').value;
-  const d={first,last:document.getElementById('e-last').value.trim(),seg:document.getElementById('e-seg').value,phone:document.getElementById('e-phone').value.trim(),email:document.getElementById('e-email').value.trim(),addr1:document.getElementById('e-addr1').value.trim(),addr2:document.getElementById('e-addr2').value.trim(),city:document.getElementById('e-city').value.trim(),state:document.getElementById('e-state').value.trim().toUpperCase(),zip:document.getElementById('e-zip').value.trim(),spouse:document.getElementById('e-spouse').value.trim(),dob:document.getElementById('e-dob').value.trim(),touchGoal:document.getElementById('e-touch').value,followupDate:document.getElementById('e-followup-date').value,followupNote:document.getElementById('e-followup-note').value.trim(),notes:document.getElementById('e-notes').value.trim()};
-  if(eid) { await fbUpdate('contacts',eid,d); const i=contacts.findIndex(c=>c.id===eid); if(i>=0) contacts[i]={...contacts[i],...d}; }
-  else { const newId=await fbAdd('contacts',{...d,lastTouch:null,history:[],added:new Date().toISOString()}); contacts.push({id:newId,...d,lastTouch:null,history:[],added:new Date().toISOString()}); }
-  cm('m-contact'); render();
-};
-window.delC = async function(id) {
-  if(!confirm('Remove this contact?')) return;
-  await fbDelete('contacts',id); contacts=contacts.filter(c=>c.id!==id); render();
-};
-
-// ── TOUCH ─────────────────────────────────────────────────
-window.openTouch = function(id) {
-  touchingId=id; const c=contacts.find(x=>x.id===id);
-  document.getElementById('touch-name').textContent=c.first+' '+c.last;
-  document.getElementById('t-method').value='text'; document.getElementById('t-note').value='';
-  document.getElementById('m-touch').classList.add('open');
-};
-window.saveTouch = async function() {
-  if(!touchingId) return;
-  const i=contacts.findIndex(c=>c.id===touchingId); if(i<0) return;
-  const e={date:new Date().toISOString(),method:document.getElementById('t-method').value,note:document.getElementById('t-note').value.trim()};
-  const history=[...(contacts[i].history||[]),e];
-  const touchUpdate = {lastTouch:e.date, history};
-  // Clear follow-up date when touch is logged
-  touchUpdate.followupDate = '';
-  touchUpdate.followupNote = '';
-  await fbUpdate('contacts',touchingId,touchUpdate);
-  contacts[i].lastTouch=e.date; contacts[i].history=history;
-  contacts[i].followupDate=''; contacts[i].followupNote='';
-  cm('m-touch'); render();
-};
-
-// ── HISTORY ───────────────────────────────────────────────
-window.openHist = function(id) {
-  histId=id; const c=contacts.find(x=>x.id===id); if(!c) return;
-  document.getElementById('hist-title').textContent=c.first+' '+c.last+' — contact history';
-  const h=c.history||[];
-  document.getElementById('hist-body').innerHTML=h.length?[...h].reverse().map(e=>`<div class="hentry"><div class="hmeta"><span class="hdate">${new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span><span class="hmethod">${e.method}</span></div>${e.note?`<div class="hnote">${e.note}</div>`:''}</div>`).join(''):'<p style="font-size:13px;color:var(--muted);padding:8px 0">No touches logged yet.</p>';
-  document.getElementById('m-hist').classList.add('open');
-};
-
-// ── LEADS ─────────────────────────────────────────────────
-window.openAddLead = function(stage='aware') {
-  const sel=document.getElementById('lead-contact');
-  sel.innerHTML=contacts.map(c=>`<option value="${c.first} ${c.last}">${c.first} ${c.last}</option>`).join('');
-  document.getElementById('lead-stage').value=stage; document.getElementById('lead-type').value='buyer'; document.getElementById('lead-note').value='';
-  document.getElementById('m-lead').classList.add('open');
-};
-window.saveLead = async function() {
-  const d={contactName:document.getElementById('lead-contact').value,stage:document.getElementById('lead-stage').value,type:document.getElementById('lead-type').value,note:document.getElementById('lead-note').value.trim()};
-  const newId=await fbAdd('leads',d); leads.push({id:newId,...d});
-  cm('m-lead'); renderStats(); if(currentTab==='leads') renderPipeline();
-};
-window.pStage = async function(id, stage) {
-  const l=leads.find(x=>x.id===id); if(!l) return;
-  l.stage=stage; await fbUpdate('leads',id,{stage});
-  renderStats(); renderPipeline();
-};
-window.pDel = async function(id) {
-  await fbDelete('leads',id); leads=leads.filter(l=>l.id!==id); renderStats(); renderPipeline();
-};
-
-// ── TRANSACTIONS ──────────────────────────────────────────
-window.calcTrans = function() {
-  const price=parseFloat(document.getElementById('tt-price').value)||0;
-  if(!price){document.getElementById('tt-preview').style.display='none';return;}
-  const comm=parseFloat(document.getElementById('tt-comm').value)||3.5, ref=parseFloat(document.getElementById('tt-ref').value)||0;
-  const split=parseFloat(document.getElementById('tt-split').value)||70, fed=parseFloat(document.getElementById('tt-fed').value)||20, state=parseFloat(document.getElementById('tt-state').value)||10;
-  const b=calcBreakdown(price,comm,ref,split,fed,state), broker=100-split;
-  const rows=[['sale price',fmt(price),''],['total commission ('+comm+'%)',fmt(b.totalComm),''],
-    ref>0?['referral fee ('+ref+'%)','− '+fmt(b.referral),'color:#b83030']:null,
-    ['broker split ('+broker+'%)','− '+fmt(b.brokerCut),'color:#b83030'],
-    ['Becky keeps ('+split+'%)',fmt(b.beckyCut),'color:var(--em);font-weight:600'],
-    ['federal tax ('+fed+'%)','− '+fmt(b.fedTax),'color:#b83030'],
-    ['state tax ('+state+'%)','− '+fmt(b.stateTax),'color:#b83030'],
-    ['final payout',fmt(b.finalPayout),'color:var(--em-d);font-weight:700;font-size:15px;border-top:1px solid #ccc;padding-top:6px;margin-top:4px'],
-  ].filter(Boolean);
-  document.getElementById('tt-preview-rows').innerHTML=rows.map(([label,val,style])=>`<div style="display:flex;justify-content:space-between;padding:3px 0;${style}"><span style="color:var(--muted)">${label}</span><span style="${style}">${val}</span></div>`).join('');
-  document.getElementById('tt-preview').style.display='block';
-};
-window.openAddTrans = function() {
-  document.getElementById('mt-title').textContent='add transaction'; document.getElementById('tt-id').value='';
-  document.getElementById('tt-client').value=''; document.getElementById('tt-date').value=new Date().toISOString().slice(0,10);
-  document.getElementById('tt-agent').value='Becky Oxford'; document.getElementById('tt-price').value='';
-  document.getElementById('tt-comm').value='3.5'; document.getElementById('tt-ref').value='0';
-  document.getElementById('tt-split').value='70'; document.getElementById('tt-fed').value='20';
-  document.getElementById('tt-state').value='10'; document.getElementById('tt-notes').value='';
-  document.getElementById('tt-preview').style.display='none';
-  document.getElementById('m-trans').classList.add('open');
-};
-window.openEditTrans = function(id) {
-  const t=transactions.find(x=>x.id===id); if(!t) return;
-  document.getElementById('mt-title').textContent='edit transaction'; document.getElementById('tt-id').value=id;
-  document.getElementById('tt-client').value=t.client||''; document.getElementById('tt-date').value=t.date||'';
-  document.getElementById('tt-agent').value=t.agent||''; document.getElementById('tt-price').value=t.price||'';
-  document.getElementById('tt-comm').value=t.commPct||3.5; document.getElementById('tt-ref').value=t.refPct||0;
-  document.getElementById('tt-split').value=t.splitPct||70; document.getElementById('tt-fed').value=t.fedPct||20;
-  document.getElementById('tt-state').value=t.statePct||10; document.getElementById('tt-notes').value=t.notes||'';
-  calcTrans(); document.getElementById('m-trans').classList.add('open');
-};
-window.saveTrans = async function() {
-  const client=document.getElementById('tt-client').value.trim(), price=parseFloat(document.getElementById('tt-price').value);
-  if(!client||!price){alert('Client name and sale price are required.');return;}
-  const tid=document.getElementById('tt-id').value;
-  const d={client,date:document.getElementById('tt-date').value,agent:document.getElementById('tt-agent').value.trim(),price,commPct:parseFloat(document.getElementById('tt-comm').value)||3.5,refPct:parseFloat(document.getElementById('tt-ref').value)||0,splitPct:parseFloat(document.getElementById('tt-split').value)||70,fedPct:parseFloat(document.getElementById('tt-fed').value)||20,statePct:parseFloat(document.getElementById('tt-state').value)||10,notes:document.getElementById('tt-notes').value.trim()};
-  if(tid){await fbUpdate('transactions',tid,d);const i=transactions.findIndex(x=>x.id===tid);if(i>=0)transactions[i]={...transactions[i],...d};}
-  else{const newId=await fbAdd('transactions',{...d,added:new Date().toISOString()});transactions.push({id:newId,...d,added:new Date().toISOString()});}
-  cm('m-trans'); renderTransactions();
-};
-window.delTrans = async function(id) {
-  if(!confirm('Remove this transaction?')) return;
-  await fbDelete('transactions',id); transactions=transactions.filter(t=>t.id!==id); renderTransactions();
-};
-
-// ── CSV EXPORT ────────────────────────────────────────────
-window.exportCSV = function() {
-  if(!contacts.length){alert('No contacts.');return;}
-  const h=['First','Last','Segment','Phone','Email','Address 1','Address 2','City','State','Zip','Spouse','DOB','Touch Goal','Last Touch','Notes'];
-  const rows=contacts.map(c=>[c.first,c.last,segL(c.seg),c.phone||'',c.email||'',c.addr1||'',c.addr2||'',c.city||'',c.state||'',c.zip||'',c.spouse||'',c.dob||'',c.touchGoal||'',c.lastTouch?new Date(c.lastTouch).toLocaleDateString():'',c.notes||''].map(v=>'"'+String(v).replace(/"/g,'""')+'"'));
-  const csv=[h.join(','),...rows.map(r=>r.join(','))].join('\n');
-  const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='becky-sphere-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
-};
-
-// ── MODAL CLOSE ON BACKDROP ───────────────────────────────
-['m-contact','m-touch','m-hist','m-lead','m-trans'].forEach(id=>{
-  document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});
-});
-
-// Wire up search and filter via event listeners (required for type=module)
-document.getElementById('search-input').addEventListener('input', () => window.renderContacts());
-document.getElementById('seg-filter').addEventListener('change', () => window.renderContacts());
-
-load();
-</script>
-</body>
-</html>
