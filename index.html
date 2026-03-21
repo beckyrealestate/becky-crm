@@ -23,7 +23,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .sync-dot.error { background: #f87171; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 .main { max-width: 1200px; margin: 0 auto; padding: 22px 16px; }
-.stats-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 11px; margin-bottom: 18px; }
+.stats-row { display: grid; grid-template-columns: repeat(6,1fr); gap: 11px; margin-bottom: 18px; }
 .stat { background: white; border-radius: var(--r); padding: 13px 16px; border: 1px solid var(--border); cursor: pointer; }
 .stat:hover { border-color: var(--em-b); }
 .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
@@ -118,7 +118,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .loading-screen .spinner { width: 36px; height: 36px; border: 3px solid var(--em-b); border-top-color: var(--em); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-screen p { color: var(--muted); font-size: 14px; }
-@media(max-width:700px){ .stats-row{grid-template-columns:repeat(2,1fr);} .pipeline{grid-template-columns:1fr 1fr;} }
+@media(max-width:700px){ .stats-row{grid-template-columns:repeat(3,1fr);} .pipeline{grid-template-columns:1fr 1fr;} }
 @media(max-width:480px){ .pipeline{grid-template-columns:1fr;} }
 </style>
 </head>
@@ -576,6 +576,8 @@ window.filtered = function() {
   if(q) list=list.filter(c=>(c.first+' '+c.last).toLowerCase().includes(q)||(c.phone||'').includes(q)||(c.email||'').toLowerCase().includes(q)||(c.city||'').toLowerCase().includes(q)||(c.notes||'').toLowerCase().includes(q)||(c.addr1||'').toLowerCase().includes(q));
   if(seg) list=list.filter(c=>c.seg===seg);
   if(currentTab==='overdue') list=list.filter(c=>tss(c).p===0);
+  if(currentTab==='pastdue') list=list.filter(c=>c.lastTouch&&tss(c).p===0);
+  if(currentTab==='never') list=list.filter(c=>!c.lastTouch);
   if(currentTab==='recent') list=[...list].sort((a,b)=>new Date(b.added)-new Date(a.added)).slice(0,20);
   return list.sort((a,b)=>tss(a).p-tss(b).p);
 }
@@ -584,10 +586,13 @@ window.filtered = function() {
 function renderStats() {
   const total=contacts.length, ov=contacts.filter(c=>tss(c).p===0).length, soon=contacts.filter(c=>tss(c).p===1).length;
   const lc=leads.filter(l=>l.stage!=='closed').length, bc=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;}).length;
+  const pastDue=contacts.filter(c=>c.lastTouch&&tss(c).p===0).length;
+  const neverContacted=contacts.filter(c=>!c.lastTouch).length;
   document.getElementById('stats-row').innerHTML=`
     <div class="stat" onclick="setTab('all',document.getElementById('tab-all'))"><div class="stat-label">total contacts</div><div class="stat-value sv-g">${total}</div></div>
-    <div class="stat" onclick="setTab('overdue',document.getElementById('tab-needs'))"><div class="stat-label">needs touch</div><div class="stat-value sv-r">${ov}</div></div>
-    <div class="stat"><div class="stat-label">due soon</div><div class="stat-value sv-o">${soon}</div></div>
+    <div class="stat" onclick="setTab('pastdue',document.getElementById('tab-needs'))"><div class="stat-label">past due</div><div class="stat-value sv-r">${pastDue}</div></div>
+    <div class="stat" onclick="setTab('never',document.getElementById('tab-needs'))"><div class="stat-label">never contacted</div><div class="stat-value sv-r">${neverContacted}</div></div>
+    <div class="stat" onclick="setTab('overdue',document.getElementById('tab-needs'))"><div class="stat-label">due soon</div><div class="stat-value sv-o">${soon}</div></div>
     <div class="stat" onclick="setTab('leads',document.getElementById('tab-leads'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">${lc}</div></div>
     <div class="stat" onclick="setTab('bday',document.getElementById('tab-bday'))"><div class="stat-label">bdays (30d)</div><div class="stat-value sv-b">${bc}</div></div>`;
   document.getElementById('b-over').textContent=ov;
@@ -718,7 +723,7 @@ window.setTab = function(tab, el) {
   document.getElementById('view-leads').style.display=tab==='leads'?'block':'none';
   document.getElementById('view-bday').style.display=tab==='bday'?'block':'none';
   document.getElementById('view-trans').style.display=tab==='transactions'?'block':'none';
-  if(tab==='leads') renderPipeline(); else if(tab==='bday') renderBdays(); else if(tab==='transactions') renderTransactions(); else renderContacts();
+  if(tab==='leads') renderPipeline(); else if(tab==='bday') renderBdays(); else if(tab==='transactions') renderTransactions(); else window.renderContacts();
 };
 
 // ── CONTACTS ──────────────────────────────────────────────
@@ -871,3 +876,4 @@ load();
 </script>
 </body>
 </html>
+
