@@ -563,6 +563,16 @@ function bdayStr(dob) {
   return (mn[parseInt(p[0],10)-1]||'')+' '+parseInt(p[1],10);
 }
 function dsi(iso) { if(!iso) return null; return Math.floor((Date.now()-new Date(iso).getTime())/86400000); }
+function fuLine(c) {
+  if (!c.followupDate) return '';
+  const fu = new Date(c.followupDate + 'T12:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const overdue = fu < today;
+  const color = overdue ? '#b83030' : '#1a5da0';
+  const dateStr = fu.toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
+  const reason = c.followupNote ? ' — ' + c.followupNote : '';
+  return '<div style="font-size:11px;font-weight:500;color:' + color + '">📅 follow up: ' + dateStr + reason + '</div>';
+}
 function tss(c) {
   // Check specific follow-up date first
   if(c.followupDate) {
@@ -634,7 +644,7 @@ window.renderContacts = function() {
         ${c.phone?`<div>📞 ${c.phone}</div>`:''}
         ${c.email?`<div>✉ ${c.email}</div>`:''}
         ${addr?`<div>📍 ${addr}</div>`:''}
-        ${c.followupDate?`<div style="font-size:11px;font-weight:500;color:${new Date(c.followupDate+'T12:00:00')<=new Date()?'#b83030':'#1a5da0'}">📅 follow up: ${new Date(c.followupDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}${c.followupNote?' — '+c.followupNote:''}</div>`:''}`
+        ${fuLine(c)}
         ${ll}
       </div>
       <div class="ctouch"><span class="tl">last touch</span><span class="tv ${ts.cls}">${ts.label}</span></div>
