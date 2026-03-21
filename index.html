@@ -137,20 +137,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   </div>
   <div class="topbar-btns">
     <div class="sync-status"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">synced</span></div>
-    <button class="tbtn" onclick="exportCSV()">⬇ export CSV</button>
-    <button class="tbtn" onclick="openAdd()">+ add contact</button>
+    <button class="tbtn" onclick="window.exportCSV()">⬇ export CSV</button>
+    <button class="tbtn" onclick="window.openAdd()">+ add contact</button>
   </div>
 </div>
 
 <div class="main">
   <div class="stats-row" id="stats-row"></div>
   <div class="nav-tabs">
-    <button class="ntab active" id="tab-all" onclick="setTab('all',this)">all contacts</button>
-    <button class="ntab" id="tab-needs" onclick="setTab('needstouch',this)">needs touch <span class="badge br" id="b-over">0</span></button>
-    <button class="ntab" id="tab-leads" onclick="setTab('leads',this)">hot leads <span class="badge bp" id="b-leads">0</span></button>
-    <button class="ntab" id="tab-bday" onclick="setTab('bday',this)">birthdays <span class="badge bb" id="b-bday">0</span></button>
-    <button class="ntab" id="tab-recent" onclick="setTab('recent',this)">recently added</button>
-    <button class="ntab" id="tab-trans" onclick="setTab('transactions',this)">💰 transactions</button>
+    <button class="ntab active" id="tab-all" onclick="window.setTab('all',this)">all contacts</button>
+    <button class="ntab" id="tab-needs" onclick="window.setTab('needstouch',this)">needs touch <span class="badge br" id="b-over">0</span></button>
+    <button class="ntab" id="tab-leads" onclick="window.setTab('leads',this)">hot leads <span class="badge bp" id="b-leads">0</span></button>
+    <button class="ntab" id="tab-bday" onclick="window.setTab('bday',this)">birthdays <span class="badge bb" id="b-bday">0</span></button>
+    <button class="ntab" id="tab-recent" onclick="window.setTab('recent',this)">recently added</button>
+    <button class="ntab" id="tab-trans" onclick="window.setTab('transactions',this)">💰 transactions</button>
   </div>
 
   <div id="view-contacts">
@@ -169,7 +169,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <div id="view-leads" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
       <p style="font-size:13px;color:var(--muted)">Track potential buyers &amp; sellers through your pipeline</p>
-      <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="openAddLead()">+ add lead</button>
+      <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="window.openAddLead()">+ add lead</button>
     </div>
     <div class="pipeline" id="pipeline"></div>
   </div>
@@ -182,7 +182,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <div id="view-trans" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
       <div id="trans-summary" style="display:flex;gap:12px;flex-wrap:wrap"></div>
-      <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="openAddTrans()">+ add transaction</button>
+      <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="window.openAddTrans()">+ add transaction</button>
     </div>
     <div id="trans-table"></div>
   </div>
@@ -233,8 +233,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
     <div class="fr"><label class="fl">notes</label><textarea class="fi" id="e-notes" rows="3"></textarea></div>
     <div class="mfooter">
-      <button class="btn btn-ghost" onclick="cm('m-contact')">cancel</button>
-      <button class="btn btn-primary" onclick="saveContact()">save contact</button>
+      <button class="btn btn-ghost" onclick="window.cm('m-contact')">cancel</button>
+      <button class="btn btn-primary" onclick="window.saveContact()">save contact</button>
     </div>
   </div>
 </div>
@@ -253,8 +253,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
     <div class="fr"><label class="fl">note (optional)</label><textarea class="fi" id="t-note" rows="2"></textarea></div>
     <div class="mfooter">
-      <button class="btn btn-ghost" onclick="cm('m-touch')">cancel</button>
-      <button class="btn btn-primary" onclick="saveTouch()">log touch</button>
+      <button class="btn btn-ghost" onclick="window.cm('m-touch')">cancel</button>
+      <button class="btn btn-primary" onclick="window.saveTouch()">log touch</button>
     </div>
   </div>
 </div>
@@ -264,7 +264,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <div class="modal modal-lg">
     <div class="mtitle" id="hist-title">contact history</div>
     <div id="hist-body"></div>
-    <div class="mfooter"><button class="btn btn-ghost" onclick="cm('m-hist')">close</button></div>
+    <div class="mfooter"><button class="btn btn-ghost" onclick="window.cm('m-hist')">close</button></div>
   </div>
 </div>
 
@@ -286,8 +286,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
     <div class="fr"><label class="fl">timeline note</label><input class="fi" id="lead-note"></div>
     <div class="mfooter">
-      <button class="btn btn-ghost" onclick="cm('m-lead')">cancel</button>
-      <button class="btn btn-primary" onclick="saveLead()">add lead</button>
+      <button class="btn btn-ghost" onclick="window.cm('m-lead')">cancel</button>
+      <button class="btn btn-primary" onclick="window.saveLead()">add lead</button>
     </div>
   </div>
 </div>
@@ -302,19 +302,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       <div><label class="fl">close date</label><input class="fi" id="tt-date" type="date"></div>
     </div>
     <div class="fr2">
-      <div><label class="fl">sale price ($) *</label><input class="fi" id="tt-price" type="number" oninput="calcTrans()"></div>
+      <div><label class="fl">sale price ($) *</label><input class="fi" id="tt-price" type="number" oninput="window.calcTrans()"></div>
       <div><label class="fl">agent</label><input class="fi" id="tt-agent" value="Becky Oxford"></div>
     </div>
     <div class="fr2">
-      <div><label class="fl">commission %</label><input class="fi" id="tt-comm" type="number" step="0.1" value="3.5" oninput="calcTrans()"></div>
-      <div><label class="fl">referral %</label><input class="fi" id="tt-ref" type="number" step="0.1" value="0" oninput="calcTrans()"></div>
+      <div><label class="fl">commission %</label><input class="fi" id="tt-comm" type="number" step="0.1" value="3.5" oninput="window.calcTrans()"></div>
+      <div><label class="fl">referral %</label><input class="fi" id="tt-ref" type="number" step="0.1" value="0" oninput="window.calcTrans()"></div>
     </div>
     <div class="fr2">
-      <div><label class="fl">Becky's split %</label><input class="fi" id="tt-split" type="number" value="70" oninput="calcTrans()"></div>
-      <div><label class="fl">federal tax %</label><input class="fi" id="tt-fed" type="number" value="20" oninput="calcTrans()"></div>
+      <div><label class="fl">Becky's split %</label><input class="fi" id="tt-split" type="number" value="70" oninput="window.calcTrans()"></div>
+      <div><label class="fl">federal tax %</label><input class="fi" id="tt-fed" type="number" value="20" oninput="window.calcTrans()"></div>
     </div>
     <div class="fr2">
-      <div><label class="fl">state tax %</label><input class="fi" id="tt-state" type="number" value="10" oninput="calcTrans()"></div>
+      <div><label class="fl">state tax %</label><input class="fi" id="tt-state" type="number" value="10" oninput="window.calcTrans()"></div>
       <div></div>
     </div>
     <div id="tt-preview" style="background:#f4f7f5;border-radius:10px;padding:14px;margin-bottom:14px;display:none">
@@ -323,8 +323,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
     <div class="fr"><label class="fl">notes</label><textarea class="fi" id="tt-notes" rows="2"></textarea></div>
     <div class="mfooter">
-      <button class="btn btn-ghost" onclick="cm('m-trans')">cancel</button>
-      <button class="btn btn-primary" onclick="saveTrans()">save transaction</button>
+      <button class="btn btn-ghost" onclick="window.cm('m-trans')">cancel</button>
+      <button class="btn btn-primary" onclick="window.saveTrans()">save transaction</button>
     </div>
   </div>
 </div>
@@ -614,12 +614,12 @@ function renderStats() {
   const pastDue=contacts.filter(c=>c.lastTouch&&tss(c).p===0).length;
   const neverContacted=contacts.filter(c=>!c.lastTouch).length;
   document.getElementById('stats-row').innerHTML=`
-    <div class="stat" onclick="setTab('all',document.getElementById('tab-all'))"><div class="stat-label">total contacts</div><div class="stat-value sv-g">${total}</div></div>
-    <div class="stat" onclick="setTab('never',document.getElementById('tab-needs'))"><div class="stat-label">never contacted</div><div class="stat-value sv-r">${neverContacted}</div></div>
-    <div class="stat" onclick="setTab('soon',document.getElementById('tab-needs'))"><div class="stat-label">due soon</div><div class="stat-value sv-o">${soon}</div></div>
-    <div class="stat" onclick="setTab('pastdue',document.getElementById('tab-needs'))"><div class="stat-label">past due</div><div class="stat-value sv-r">${pastDue}</div></div>
-    <div class="stat" onclick="setTab('bday',document.getElementById('tab-bday'))"><div class="stat-label">bdays (30d)</div><div class="stat-value sv-b">${bc}</div></div>
-    <div class="stat" onclick="setTab('leads',document.getElementById('tab-leads'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">${lc}</div></div>`;
+    <div class="stat" onclick="window.setTab('all',document.getElementById('tab-all'))"><div class="stat-label">total contacts</div><div class="stat-value sv-g">${total}</div></div>
+    <div class="stat" onclick="window.setTab('never',document.getElementById('tab-needs'))"><div class="stat-label">never contacted</div><div class="stat-value sv-r">${neverContacted}</div></div>
+    <div class="stat" onclick="window.setTab('soon',document.getElementById('tab-needs'))"><div class="stat-label">due soon</div><div class="stat-value sv-o">${soon}</div></div>
+    <div class="stat" onclick="window.setTab('pastdue',document.getElementById('tab-needs'))"><div class="stat-label">past due</div><div class="stat-value sv-r">${pastDue}</div></div>
+    <div class="stat" onclick="window.setTab('bday',document.getElementById('tab-bday'))"><div class="stat-label">bdays (30d)</div><div class="stat-value sv-b">${bc}</div></div>
+    <div class="stat" onclick="window.setTab('leads',document.getElementById('tab-leads'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">${lc}</div></div>`;
   const needsTouch=contacts.filter(c=>tss(c).p===0||!c.lastTouch).length;
   document.getElementById('b-over').textContent=needsTouch;
   document.getElementById('b-leads').textContent=lc;
@@ -652,10 +652,10 @@ window.renderContacts = function() {
       </div>
       <div class="ctouch"><span class="tl">last touch</span><span class="tv ${ts.cls}">${ts.label}</span></div>
       <div class="cbtns">
-        <button class="cbtn" onclick="openEdit('${c.id}')">edit</button>
-        <button class="cbtn touch" onclick="openTouch('${c.id}')">log touch</button>
-        <button class="cbtn" onclick="openHist('${c.id}')">history</button>
-        <button class="cbtn del" onclick="delC('${c.id}')">delete</button>
+        <button class="cbtn" onclick="window.openEdit('${c.id}')">edit</button>
+        <button class="cbtn touch" onclick="window.openTouch('${c.id}')">log touch</button>
+        <button class="cbtn" onclick="window.openHist('${c.id}')">history</button>
+        <button class="cbtn del" onclick="window.delC('${c.id}')">delete</button>
       </div>${note}
     </div>`;
   }).join('');
@@ -670,15 +670,15 @@ function renderPipeline() {
         <div class="plead-name">${l.contactName}</div>
         <div class="plead-meta">${l.type} · ${l.note||''}</div>
         <div class="plead-btns">
-          <select class="pbtn" onchange="pStage('${l.id}',this.value)" style="cursor:pointer;flex:1">
+          <select class="pbtn" onchange="window.pStage('${l.id}',this.value)" style="cursor:pointer;flex:1">
             <option value="aware" ${l.stage==='aware'?'selected':''}>aware</option>
             <option value="interested" ${l.stage==='interested'?'selected':''}>interested</option>
             <option value="active" ${l.stage==='active'?'selected':''}>active</option>
             <option value="closed" ${l.stage==='closed'?'selected':''}>closed</option>
           </select>
-          <button class="pbtn" onclick="pDel('${l.id}')">remove</button>
+          <button class="pbtn" onclick="window.pDel('${l.id}')">remove</button>
         </div></div>`).join('')}
-      <button class="add-lead-row" onclick="openAddLead('${s}')">+ add</button>
+      <button class="add-lead-row" onclick="window.openAddLead('${s}')">+ add</button>
     </div>`;
   }).join('');
 }
@@ -733,8 +733,8 @@ function renderTransactions() {
         ].filter(Boolean).map(([label,val,color])=>`<div style="background:#f9fafb;border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px">${label}</div><div style="font-size:13px;font-weight:600;color:${color||'#1a1a1a'}">${val}</div></div>`).join('')}
       </div>
       <div style="display:flex;gap:8px">
-        <button class="cbtn" onclick="openEditTrans('${t.id}')">edit</button>
-        <button class="cbtn del" onclick="delTrans('${t.id}')">delete</button>
+        <button class="cbtn" onclick="window.openEditTrans('${t.id}')">edit</button>
+        <button class="cbtn del" onclick="window.delTrans('${t.id}')">delete</button>
       </div>
     </div>`;
   }).join('');
