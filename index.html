@@ -221,11 +221,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       <div></div>
     </div>
     <div class="fr"><label class="fl">spouse / partner</label><input class="fi" id="e-spouse"></div>
-    <div class="fr"><label class="fl">touch goal</label>
+    <div class="fr"><label class="fl">touch goal cadence</label>
       <select class="fi" id="e-touch">
         <option value="30">monthly</option><option value="60">every 2 months</option>
         <option value="90" selected>quarterly</option><option value="180">every 6 months</option><option value="365">annually</option>
       </select>
+    </div>
+    <div class="fr2">
+      <div><label class="fl">specific follow-up date</label><input class="fi" id="e-followup-date" type="date"></div>
+      <div><label class="fl">follow-up reason</label><input class="fi" id="e-followup-note" placeholder="e.g. call about listing"></div>
     </div>
     <div class="fr"><label class="fl">notes</label><textarea class="fi" id="e-notes" rows="3"></textarea></div>
     <div class="mfooter">
@@ -560,6 +564,15 @@ function bdayStr(dob) {
 }
 function dsi(iso) { if(!iso) return null; return Math.floor((Date.now()-new Date(iso).getTime())/86400000); }
 function tss(c) {
+  // Check specific follow-up date first
+  if(c.followupDate) {
+    const fu = new Date(c.followupDate+'T12:00:00');
+    const today = new Date(); today.setHours(0,0,0,0);
+    const daysUntil = Math.ceil((fu-today)/86400000);
+    if(daysUntil < 0) return {label:'follow-up overdue',cls:'tv-r',p:0};
+    if(daysUntil === 0) return {label:'follow-up due today!',cls:'tv-r',p:0};
+    if(daysUntil <= 7) return {label:'follow-up in '+daysUntil+'d',cls:'tv-o',p:1};
+  }
   if(!c.lastTouch) return {label:'never contacted',cls:'tv-r',p:0};
   const d=dsi(c.lastTouch), g=parseInt(c.touchGoal||90);
   if(d>g) return {label:d+'d ago — overdue',cls:'tv-r',p:0};
@@ -621,6 +634,7 @@ window.renderContacts = function() {
         ${c.phone?`<div>📞 ${c.phone}</div>`:''}
         ${c.email?`<div>✉ ${c.email}</div>`:''}
         ${addr?`<div>📍 ${addr}</div>`:''}
+        ${c.followupDate?`<div style="font-size:11px;font-weight:500;color:${new Date(c.followupDate+'T12:00:00')<=new Date()?'#b83030':'#1a5da0'}">📅 follow up: ${new Date(c.followupDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}${c.followupNote?' — '+c.followupNote:''}</div>`:''}`
         ${ll}
       </div>
       <div class="ctouch"><span class="tl">last touch</span><span class="tv ${ts.cls}">${ts.label}</span></div>
@@ -729,7 +743,7 @@ window.setTab = function(tab, el) {
 // ── CONTACTS ──────────────────────────────────────────────
 window.openAdd = function() {
   document.getElementById('mc-title').textContent='add contact'; document.getElementById('e-id').value='';
-  ['first','last','phone','email','addr1','addr2','city','state','zip','spouse','notes','dob'].forEach(f=>document.getElementById('e-'+f).value='');
+  ['first','last','phone','email','addr1','addr2','city','state','zip','spouse','notes','dob','followup-date','followup-note'].forEach(f=>document.getElementById('e-'+f).value='');
   document.getElementById('e-seg').value='personal'; document.getElementById('e-touch').value='90';
   document.getElementById('m-contact').classList.add('open');
 };
@@ -737,6 +751,8 @@ window.openEdit = function(id) {
   const c=contacts.find(x=>x.id===id); if(!c) return;
   document.getElementById('mc-title').textContent='edit contact'; document.getElementById('e-id').value=id;
   ['first','last','phone','email','addr1','addr2','city','state','zip','spouse','notes'].forEach(f=>document.getElementById('e-'+f).value=c[f]||'');
+  document.getElementById('e-followup-date').value=c.followupDate||'';
+  document.getElementById('e-followup-note').value=c.followupNote||'';
   document.getElementById('e-dob').value=c.dob||''; document.getElementById('e-seg').value=c.seg||'other'; document.getElementById('e-touch').value=c.touchGoal||'90';
   document.getElementById('m-contact').classList.add('open');
 };
@@ -744,7 +760,7 @@ window.cm = function(id) { document.getElementById(id).classList.remove('open');
 window.saveContact = async function() {
   const first=document.getElementById('e-first').value.trim(); if(!first){alert('First name required');return;}
   const eid=document.getElementById('e-id').value;
-  const d={first,last:document.getElementById('e-last').value.trim(),seg:document.getElementById('e-seg').value,phone:document.getElementById('e-phone').value.trim(),email:document.getElementById('e-email').value.trim(),addr1:document.getElementById('e-addr1').value.trim(),addr2:document.getElementById('e-addr2').value.trim(),city:document.getElementById('e-city').value.trim(),state:document.getElementById('e-state').value.trim().toUpperCase(),zip:document.getElementById('e-zip').value.trim(),spouse:document.getElementById('e-spouse').value.trim(),dob:document.getElementById('e-dob').value.trim(),touchGoal:document.getElementById('e-touch').value,notes:document.getElementById('e-notes').value.trim()};
+  const d={first,last:document.getElementById('e-last').value.trim(),seg:document.getElementById('e-seg').value,phone:document.getElementById('e-phone').value.trim(),email:document.getElementById('e-email').value.trim(),addr1:document.getElementById('e-addr1').value.trim(),addr2:document.getElementById('e-addr2').value.trim(),city:document.getElementById('e-city').value.trim(),state:document.getElementById('e-state').value.trim().toUpperCase(),zip:document.getElementById('e-zip').value.trim(),spouse:document.getElementById('e-spouse').value.trim(),dob:document.getElementById('e-dob').value.trim(),touchGoal:document.getElementById('e-touch').value,followupDate:document.getElementById('e-followup-date').value,followupNote:document.getElementById('e-followup-note').value.trim(),notes:document.getElementById('e-notes').value.trim()};
   if(eid) { await fbUpdate('contacts',eid,d); const i=contacts.findIndex(c=>c.id===eid); if(i>=0) contacts[i]={...contacts[i],...d}; }
   else { const newId=await fbAdd('contacts',{...d,lastTouch:null,history:[],added:new Date().toISOString()}); contacts.push({id:newId,...d,lastTouch:null,history:[],added:new Date().toISOString()}); }
   cm('m-contact'); render();
