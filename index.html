@@ -601,6 +601,7 @@ window.filtered = function() {
   if(currentTab==='overdue') list=list.filter(c=>tss(c).p===0);
   if(currentTab==='pastdue') list=list.filter(c=>c.lastTouch&&tss(c).p===0);
   if(currentTab==='never') list=list.filter(c=>!c.lastTouch);
+  if(currentTab==='soon') list=list.filter(c=>tss(c).p===1);
   if(currentTab==='recent') list=[...list].sort((a,b)=>new Date(b.added)-new Date(a.added)).slice(0,20);
   return list.sort((a,b)=>tss(a).p-tss(b).p);
 }
@@ -614,7 +615,7 @@ function renderStats() {
   document.getElementById('stats-row').innerHTML=`
     <div class="stat" onclick="setTab('all',document.getElementById('tab-all'))"><div class="stat-label">total contacts</div><div class="stat-value sv-g">${total}</div></div>
     <div class="stat" onclick="setTab('never',document.getElementById('tab-needs'))"><div class="stat-label">never contacted</div><div class="stat-value sv-r">${neverContacted}</div></div>
-    <div class="stat" onclick="setTab('overdue',document.getElementById('tab-needs'))"><div class="stat-label">due soon</div><div class="stat-value sv-o">${soon}</div></div>
+    <div class="stat" onclick="setTab('soon',document.getElementById('tab-needs'))"><div class="stat-label">due soon</div><div class="stat-value sv-o">${soon}</div></div>
     <div class="stat" onclick="setTab('pastdue',document.getElementById('tab-needs'))"><div class="stat-label">past due</div><div class="stat-value sv-r">${pastDue}</div></div>
     <div class="stat" onclick="setTab('bday',document.getElementById('tab-bday'))"><div class="stat-label">bdays (30d)</div><div class="stat-value sv-b">${bc}</div></div>
     <div class="stat" onclick="setTab('leads',document.getElementById('tab-leads'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">${lc}</div></div>`;
