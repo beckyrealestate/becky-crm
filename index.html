@@ -155,8 +155,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
   <div id="view-contacts">
     <div class="toolbar">
-      <input class="search-box" type="text" placeholder="search name, phone, city, notes..." id="search-input" oninput="renderContacts()">
-      <select class="fsel" id="seg-filter" onchange="renderContacts()">
+      <input class="search-box" type="text" placeholder="search name, phone, city, notes..." id="search-input" >
+      <select class="fsel" id="seg-filter" >
         <option value="">all segments</option>
         <option value="personal">personal</option><option value="family">family</option><option value="friend">friend</option>
         <option value="neighbor">neighbor</option><option value="coworker">work</option><option value="hr-block">HR Block</option>
@@ -569,7 +569,7 @@ function tss(c) {
 function cardCls(c) { const p=tss(c).p; return 'card'+(p===0?' overdue':p===1?' due-soon':''); }
 function fmt(n) { return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
-function filtered() {
+window.filtered = function() {
   const q=(document.getElementById('search-input').value||'').toLowerCase();
   const seg=document.getElementById('seg-filter').value;
   let list=contacts.slice();
@@ -595,8 +595,8 @@ function renderStats() {
   document.getElementById('b-bday').textContent=bc;
 }
 
-function renderContacts() {
-  const list=filtered(), grid=document.getElementById('contact-grid');
+window.renderContacts = function() {
+  const list=window.filtered(), grid=document.getElementById('contact-grid');
   if(!list.length){grid.innerHTML='<div class="empty"><p>no contacts match</p></div>';return;}
   grid.innerHTML=list.map(c=>{
     const ts=tss(c), d=dbu(c.dob), isBd=d!==null&&d<=14;
@@ -862,6 +862,10 @@ window.exportCSV = function() {
 ['m-contact','m-touch','m-hist','m-lead','m-trans'].forEach(id=>{
   document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});
 });
+
+// Wire up search and filter via event listeners (required for type=module)
+document.getElementById('search-input').addEventListener('input', () => window.renderContacts());
+document.getElementById('seg-filter').addEventListener('change', () => window.renderContacts());
 
 load();
 </script>
