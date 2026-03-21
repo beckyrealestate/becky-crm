@@ -164,7 +164,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="pipeline" id="pl"></div>
   </div>
   <div id="vb" style="display:none">
-    <div class="bsec"><div class="bsec-title">🎂 upcoming — next 60 days</div><div class="bday-grid" id="b60"></div></div>
+    <div class="bsec"><div class="bsec-title">🎂 upcoming (30 days) &amp; recent (7 days)</div><div class="bday-grid" id="b60"></div></div>
     <div class="bsec"><div class="bsec-title" style="color:var(--muted)">this month</div><div class="bday-grid" id="bmo"></div></div>
   </div>
   <div id="vt" style="display:none">
@@ -345,6 +345,25 @@ function dbu(dob){
   return Math.ceil((nx-Date.now())/86400000);}catch(e){return null;}
 }
 function bds(dob){if(!dob)return'';const p=dob.split('/');const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return(mn[parseInt(p[0],10)-1]||'')+' '+parseInt(p[1],10)}
+function dbsi(dob){
+  // days since last birthday (negative = hasn't happened yet, positive = passed)
+  if(!dob)return null;
+  try{const p=dob.split('/');if(p.length<2)return null;
+  const m=parseInt(p[0],10)-1,d=parseInt(p[1],10);if(isNaN(m)||isNaN(d))return null;
+  const now=new Date();
+  const thisYr=new Date(now.getFullYear(),m,d);
+  const today=new Date();today.setHours(0,0,0,0);
+  return Math.floor((today-thisYr)/86400000);
+  }catch(e){return null;}
+}
+function bdayInWindow(c){
+  // Show if birthday is within 30 days ahead OR within 7 days past
+  const daysBefore=dbu(c.dob);  // days until next bday
+  const daysSince=dbsi(c.dob);  // days since this year's bday (positive = passed)
+  if(daysBefore!==null&&daysBefore<=30)return true;  // coming up in 30 days
+  if(daysSince!==null&&daysSince>=0&&daysSince<=7)return true;  // passed within 7 days
+  return false;
+}
 function dsi(iso){if(!iso)return null;return Math.floor((Date.now()-new Date(iso))/86400000)}
 function fl(c){
   if(!c.followupDate)return'';
@@ -397,7 +416,7 @@ function filtered(){
 
 function renderStats(){
   const total=contacts.length,ov=contacts.filter(c=>tss(c).p===0).length,soon=contacts.filter(c=>tss(c).p===1).length;
-  const lc=leads.filter(l=>l.stage!=='closed').length,bc=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;}).length;
+  const lc=leads.filter(l=>l.stage!=='closed').length,bc=contacts.filter(c=>bdayInWindow(c)).length;
   const nv=contacts.filter(c=>!c.lastTouch).length,pd=contacts.filter(c=>c.lastTouch&&tss(c).p===0).length;
   const nt=contacts.filter(c=>tss(c).p===0||!c.lastTouch).length;
   let h='';
@@ -405,7 +424,7 @@ function renderStats(){
   h+='<div class="stat" onclick="window.setTab(\'never\',document.getElementById(\'tab-needs\'))"><div class="stat-label">never contacted</div><div class="stat-value sv-r">'+nv+'</div></div>';
   h+='<div class="stat" onclick="window.setTab(\'soon\',document.getElementById(\'tab-needs\'))"><div class="stat-label">due soon</div><div class="stat-value sv-o">'+soon+'</div></div>';
   h+='<div class="stat" onclick="window.setTab(\'pastdue\',document.getElementById(\'tab-needs\'))"><div class="stat-label">past due</div><div class="stat-value sv-r">'+pd+'</div></div>';
-  h+='<div class="stat" onclick="window.setTab(\'bday\',document.getElementById(\'tab-bday\'))"><div class="stat-label">bdays (30d)</div><div class="stat-value sv-b">'+bc+'</div></div>';
+  h+='<div class="stat" onclick="window.setTab(\'bday\',document.getElementById(\'tab-bday\'))"><div class="stat-label">bdays</div><div class="stat-value sv-b">'+bc+'</div></div>';
   h+='<div class="stat" onclick="window.setTab(\'leads\',document.getElementById(\'tab-leads\'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">'+lc+'</div></div>';
   document.getElementById('stats-row').innerHTML=h;
   document.getElementById('b-needs').textContent=nt;
@@ -470,9 +489,27 @@ function renderPipeline(){
 }
 
 function renderBdays(){
-  const u60=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=60;}).sort((a,b)=>dbu(a.dob)-dbu(b.dob));
-  const u30=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;});
-  const mk=c=>{const d=dbu(c.dob),lbl=d===0?'TODAY!':d===1?'tomorrow':d+' days';return'<div class="bcard" onclick="window.openBday(\''+c.id+'\')"><div class="bav">'+ini(c)+'</div><div><div class="bname">'+c.first+' '+c.last+'</div><div class="bdate">'+bds(c.dob)+'</div><div class="blbl">'+lbl+'</div></div></div>';};
+  const u60=contacts.filter(c=>bdayInWindow(c)).sort((a,b)=>{
+    const ad=bdayTouched(a)?1:0,bd2=bdayTouched(b)?1:0;
+    if(ad!==bd2)return ad-bd2;
+    // Sort by days until bday (upcoming first), then days since (recent past last)
+    const da=dbu(a.dob)||999,db2=dbu(b.dob)||999;
+    return da-db2;
+  });
+  const u30=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;}).sort((a,b)=>{const ad=bdayTouched(a)?1:0,bd2=bdayTouched(b)?1:0;if(ad!==bd2)return ad-bd2;return (dbu(a.dob)||999)-(dbu(b.dob)||999);});
+  const bdayTouched=c=>{
+    if(!c.history||!c.history.length)return false;
+    const thisYear=new Date().getFullYear();
+    return c.history.some(h=>h.note&&h.note.includes('🎂')&&new Date(h.date).getFullYear()===thisYear);
+  };
+  const mk=c=>{
+    const d=dbu(c.dob),ds=dbsi(c.dob);
+    const lbl=d===0?'TODAY!':d!==null&&d<=30?(d===1?'tomorrow':d+' days away'):(ds!==null&&ds>0&&ds<=7?ds+' days ago':'');
+    const done=bdayTouched(c);
+    const checkmark=done?'<span style="font-size:11px;font-weight:600;color:#1a7a52;background:#e8f5ee;border-radius:20px;padding:2px 8px;margin-top:3px;display:inline-block">✓ sent</span>':'';
+    const opacity=done?'opacity:0.6;':'';
+    return'<div class="bcard" onclick="window.openBday(''+c.id+'')" style="cursor:pointer;'+opacity+'"><div class="bav">'+ini(c)+'</div><div><div class="bname">'+c.first+' '+c.last+'</div><div class="bdate">'+bds(c.dob)+'</div><div class="blbl">'+(done?'':lbl)+'</div>'+checkmark+'</div></div>';
+  };
   document.getElementById('b60').innerHTML=u60.length?u60.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None in the next 60 days</p>';
   document.getElementById('bmo').innerHTML=u30.length?u30.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None this month</p>';
 }
