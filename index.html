@@ -383,7 +383,16 @@ function filtered(){
   if(tab==='pastdue')list=list.filter(c=>c.lastTouch&&tss(c).p===0);
   if(tab==='soon')list=list.filter(c=>tss(c).p===1);
   if(tab==='recent')list=[...list].sort((a,b)=>new Date(b.added)-new Date(a.added)).slice(0,20);
-  return list.sort((a,b)=>tss(a).p-tss(b).p);
+  // For needs/filter tabs sort by urgency, for all others sort A-Z by last name
+  const urgencyTabs=['needs','never','pastdue','soon'];
+  if(urgencyTabs.includes(tab)){
+    return list.sort((a,b)=>tss(a).p-tss(b).p);
+  }
+  return list.sort((a,b)=>{
+    const la=(a.last||a.first||'').toLowerCase();
+    const lb=(b.last||b.first||'').toLowerCase();
+    return la<lb?-1:la>lb?1:0;
+  });
 }
 
 function renderStats(){
