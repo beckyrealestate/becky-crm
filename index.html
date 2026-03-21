@@ -5,130 +5,122 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>callherbecky — Sphere CRM</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f7f5; color: #1a1a1a; min-height: 100vh; }
-:root { --em: #1a7a52; --em-l: #e8f5ee; --em-d: #0f5438; --em-b: #b5ddc8; --border: rgba(0,0,0,0.1); --muted: #6b7280; --r: 10px; --rl: 14px; }
-.topbar { background: var(--em-d); color: white; padding: 13px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; }
-.brand-icon svg { width: 16px; height: 16px; fill: white; }
-.brand-name { font-size: 17px; font-weight: 600; }
-.brand-sub { font-size: 12px; opacity: 0.7; }
-.topbar-btns { display: flex; gap: 8px; align-items: center; }
-.tbtn { padding: 7px 14px; font-size: 13px; font-weight: 500; border-radius: var(--r); cursor: pointer; border: 1px solid; background: white; color: var(--em-d); border-color: rgba(255,255,255,0.4); }
-.tbtn:hover { background: var(--em-l); }
-.sync-status { font-size: 11px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 5px; }
-.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
-.sync-dot.syncing { background: #fbbf24; animation: pulse 1s infinite; }
-.sync-dot.error { background: #f87171; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.main { max-width: 1200px; margin: 0 auto; padding: 22px 16px; }
-.stats-row { display: grid; grid-template-columns: repeat(6,1fr); gap: 11px; margin-bottom: 18px; }
-.stat { background: white; border-radius: var(--r); padding: 13px 16px; border: 1px solid var(--border); cursor: pointer; }
-.stat:hover { border-color: var(--em-b); }
-.stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
-.stat-value { font-size: 24px; font-weight: 600; }
-.sv-g{color:var(--em)} .sv-r{color:#b83030} .sv-o{color:#c0720a} .sv-p{color:#7b3fa0} .sv-b{color:#1a5da0}
-.btn { padding: 8px 14px; font-size: 13px; font-weight: 500; border-radius: var(--r); cursor: pointer; border: 1px solid; }
-.btn-primary { background: var(--em); color: white; border-color: var(--em-d); }
-.btn-primary:hover { background: var(--em-d); }
-.btn-ghost { background: white; color: #333; border-color: var(--border); }
-.btn-ghost:hover { background: #f0f0f0; }
-.nav-tabs { display: flex; gap: 3px; border-bottom: 1px solid var(--border); margin-bottom: 16px; overflow-x: auto; }
-.ntab { padding: 8px 16px; font-size: 13px; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; flex-shrink: 0; }
-.ntab.active { color: var(--em); border-bottom-color: var(--em); font-weight: 600; }
-.badge { display: inline-block; font-size: 10px; border-radius: 10px; padding: 1px 5px; margin-left: 4px; color: white; }
-.bp{background:#7b3fa0} .bb{background:#1a5da0} .br{background:#b83030}
-.toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-.search-box { flex: 1; min-width: 200px; padding: 9px 14px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--r); background: white; color: #1a1a1a; }
-.search-box:focus { outline: 2px solid var(--em); outline-offset: 1px; }
-.fsel { padding: 9px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: var(--r); background: white; color: #1a1a1a; cursor: pointer; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(285px,1fr)); gap: 13px; }
-.card { background: white; border: 1px solid var(--border); border-radius: var(--rl); padding: 15px 17px; transition: border-color 0.15s; }
-.card:hover { border-color: var(--em-b); box-shadow: 0 2px 10px rgba(26,122,82,0.07); }
-.card.overdue { border-left: 3px solid #e24b4a; }
-.card.due-soon { border-left: 3px solid #ef9f27; }
-.ctop { display: flex; align-items: flex-start; gap: 11px; margin-bottom: 11px; }
-.av { width: 40px; height: 40px; border-radius: 50%; background: var(--em-l); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; color: var(--em-d); flex-shrink: 0; }
-.av.bday { background: #fff0e0; color: #7a3800; }
-.cinfo { flex: 1; min-width: 0; }
-.cname { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-.cseg { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
-.seg-personal{background:#e8f0ff;color:#2d4fa8} .seg-family{background:#fde8ff;color:#7a2da8}
-.seg-friend{background:#f0e8ff;color:#6b3eb8} .seg-neighbor{background:#e8fff0;color:#1a7a4a}
-.seg-coworker{background:#fff4e8;color:#8a5010} .seg-hr-block{background:#fff3e0;color:#7a4000}
-.seg-past-client{background:var(--em-l);color:var(--em-d)} .seg-referral{background:#fff0f4;color:#a03060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f7f5;color:#1a1a1a;min-height:100vh}
+:root{--em:#1a7a52;--em-l:#e8f5ee;--em-d:#0f5438;--em-b:#b5ddc8;--border:rgba(0,0,0,0.1);--muted:#6b7280;--r:10px;--rl:14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.topbar{background:var(--em-d);color:white;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center}
+.brand-icon svg{width:16px;height:16px;fill:white}
+.brand-name{font-size:17px;font-weight:600}
+.brand-sub{font-size:12px;opacity:0.7}
+.topbar-btns{display:flex;align-items:center;gap:10px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#fbbf24;display:inline-block}
+.sync-dot.ok{background:#4ade80}
+.sync-dot.err{background:#f87171}
+.sync-lbl{font-size:11px;color:rgba(255,255,255,0.7)}
+.tbtn{padding:7px 14px;font-size:13px;font-weight:500;border-radius:var(--r);cursor:pointer;border:1px solid;background:white;color:var(--em-d)}
+.tbtn:hover{background:var(--em-l)}
+.main{max-width:1200px;margin:0 auto;padding:22px 16px}
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:11px;margin-bottom:18px}
+.stat{background:white;border-radius:var(--r);padding:13px 16px;border:1px solid var(--border);cursor:pointer}
+.stat:hover{border-color:var(--em-b)}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px}
+.stat-value{font-size:22px;font-weight:600}
+.sv-g{color:var(--em)}.sv-r{color:#b83030}.sv-o{color:#c0720a}.sv-p{color:#7b3fa0}.sv-b{color:#1a5da0}
+.btn{padding:8px 14px;font-size:13px;font-weight:500;border-radius:var(--r);cursor:pointer;border:1px solid}
+.btn-p{background:var(--em);color:white;border-color:var(--em-d)}.btn-p:hover{background:var(--em-d)}
+.btn-g{background:white;color:#333;border-color:var(--border)}.btn-g:hover{background:#f0f0f0}
+.nav-tabs{display:flex;gap:3px;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto}
+.ntab{padding:8px 16px;font-size:13px;cursor:pointer;border:none;background:transparent;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;flex-shrink:0}
+.ntab.active{color:var(--em);border-bottom-color:var(--em);font-weight:600}
+.bdg{display:inline-block;font-size:10px;border-radius:10px;padding:1px 5px;margin-left:4px;color:white}
+.bp{background:#7b3fa0}.bb{background:#1a5da0}.br{background:#b83030}
+.toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search-box{flex:1;min-width:200px;padding:9px 14px;font-size:14px;border:1px solid var(--border);border-radius:var(--r);background:white;color:#1a1a1a}
+.search-box:focus{outline:2px solid var(--em);outline-offset:1px}
+.fsel{padding:9px 12px;font-size:13px;border:1px solid var(--border);border-radius:var(--r);background:white;color:#1a1a1a;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:13px}
+.card{background:white;border:1px solid var(--border);border-radius:var(--rl);padding:15px 17px;transition:border-color 0.15s}
+.card:hover{border-color:var(--em-b);box-shadow:0 2px 10px rgba(26,122,82,0.07)}
+.card.ov{border-left:3px solid #e24b4a}
+.card.ds{border-left:3px solid #ef9f27}
+.ctop{display:flex;align-items:flex-start;gap:11px;margin-bottom:11px}
+.av{width:40px;height:40px;border-radius:50%;background:var(--em-l);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:var(--em-d);flex-shrink:0}
+.av.bd{background:#fff0e0;color:#7a3800}
+.cinfo{flex:1;min-width:0}
+.cname{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.cseg{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.seg-personal{background:#e8f0ff;color:#2d4fa8}.seg-family{background:#fde8ff;color:#7a2da8}
+.seg-friend{background:#f0e8ff;color:#6b3eb8}.seg-neighbor{background:#e8fff0;color:#1a7a4a}
+.seg-coworker{background:#fff4e8;color:#8a5010}.seg-hr-block{background:#fff3e0;color:#7a4000}
+.seg-past-client{background:var(--em-l);color:var(--em-d)}.seg-referral{background:#fff0f4;color:#a03060}
 .seg-other{background:#f0f0f0;color:#555}
-.spouse-chip { font-size: 10px; background: #f0f0f8; color: #555; border-radius: 20px; padding: 2px 8px; }
-.bday-chip { font-size: 10px; background: #fff0e0; color: #7a3800; border-radius: 20px; padding: 2px 8px; }
-.cdetails { font-size: 12px; color: var(--muted); margin-bottom: 11px; display: flex; flex-direction: column; gap: 3px; }
-.ctouch { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; margin-bottom: 10px; }
-.tl { font-size: 11px; color: var(--muted); }
-.tv { font-size: 11px; font-weight: 600; }
-.tv-r{color:#b83030} .tv-o{color:#c0720a} .tv-g{color:var(--em)}
-.cbtns { display: flex; gap: 6px; flex-wrap: wrap; }
-.cbtn { padding: 4px 9px; font-size: 11px; border: 1px solid var(--border); border-radius: 7px; background: transparent; color: var(--muted); cursor: pointer; font-weight: 500; }
-.cbtn:hover { background: var(--em-l); color: var(--em-d); border-color: var(--em-b); }
-.cbtn.touch { background: var(--em-l); color: var(--em-d); border-color: var(--em-b); }
-.cbtn.del { color: #b83030; border-color: #f0c0c0; }
-.cbtn.del:hover { background: #fff0f0; border-color: #e08080; }
-.cnote { font-size: 12px; color: var(--muted); margin-top: 9px; padding: 6px 9px; background: #f9fafb; border-radius: 6px; border-left: 2px solid var(--em-b); font-style: italic; line-height: 1.5; }
-.pipeline { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 11px; }
-.pcol { background: #f4f7f5; border-radius: var(--rl); padding: 12px; min-height: 200px; }
-.pcol-hd { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-.pcount { background: white; border: 1px solid var(--border); border-radius: 20px; padding: 1px 7px; font-size: 11px; }
-.plead { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 10px 12px; margin-bottom: 8px; }
-.plead:hover { border-color: var(--em-b); }
-.plead-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-.plead-meta { font-size: 11px; color: var(--muted); margin-bottom: 6px; line-height: 1.4; }
-.plead-btns { display: flex; gap: 5px; }
-.pbtn { font-size: 11px; padding: 3px 8px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; }
-.pbtn:hover { background: var(--em-l); color: var(--em-d); border-color: var(--em-b); }
-.add-lead-row { width: 100%; padding: 7px; font-size: 12px; border: 1px dashed var(--border); border-radius: var(--r); background: transparent; color: var(--muted); cursor: pointer; margin-top: 4px; }
-.add-lead-row:hover { border-color: var(--em-b); color: var(--em); }
-.bsec { margin-bottom: 1.5rem; }
-.bsec-title { font-size: 14px; font-weight: 600; color: var(--em-d); margin-bottom: 12px; }
-.bday-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 9px; }
-.bcard { background: #fff8f0; border: 1px solid #f0d0b0; border-radius: var(--r); padding: 11px 13px; display: flex; align-items: center; gap: 10px; }
-.bav { width: 34px; height: 34px; border-radius: 50%; background: #ffe0c0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #7a3800; flex-shrink: 0; }
-.bname { font-size: 13px; font-weight: 600; }
-.bdate { font-size: 11px; color: #8a5010; }
-.bdays-lbl { font-size: 11px; font-weight: 600; color: #b83030; }
-.hentry { padding: 9px 0; border-bottom: 1px solid #f0f0f0; }
-.hentry:last-child { border-bottom: none; }
-.hmeta { display: flex; gap: 8px; align-items: center; margin-bottom: 3px; }
-.hdate { font-size: 11px; color: var(--muted); }
-.hmethod { font-size: 11px; font-weight: 500; color: var(--em); background: var(--em-l); padding: 1px 7px; border-radius: 20px; }
-.hnote { font-size: 12px; color: var(--muted); font-style: italic; }
-.mbk { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
-.mbk.open { display: flex; }
-.modal { background: white; border-radius: var(--rl); padding: 24px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-.modal-sm { max-width: 390px; }
-.modal-lg { max-width: 580px; }
-.mtitle { font-size: 17px; font-weight: 600; margin-bottom: 18px; color: var(--em-d); }
-.fr { margin-bottom: 13px; }
-.fl { font-size: 12px; color: var(--muted); margin-bottom: 4px; display: block; font-weight: 500; }
-.fi { width: 100%; padding: 9px 12px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--r); background: white; color: #1a1a1a; font-family: inherit; }
-.fi:focus { outline: 2px solid var(--em); outline-offset: 1px; border-color: transparent; }
-.fr2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 13px; }
-.mfooter { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-.empty { text-align: center; padding: 3rem 1rem; color: var(--muted); grid-column: 1/-1; }
-.loading-screen { position: fixed; inset: 0; background: #f4f7f5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 999; }
-.loading-screen .spinner { width: 36px; height: 36px; border: 3px solid var(--em-b); border-top-color: var(--em); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-screen p { color: var(--muted); font-size: 14px; }
-@media(max-width:700px){ .stats-row{grid-template-columns:repeat(3,1fr);} .pipeline{grid-template-columns:1fr 1fr;} }
-@media(max-width:480px){ .pipeline{grid-template-columns:1fr;} }
+.sp-chip{font-size:10px;background:#f0f0f8;color:#555;border-radius:20px;padding:2px 8px}
+.bd-chip{font-size:10px;background:#fff0e0;color:#7a3800;border-radius:20px;padding:2px 8px}
+.cdetails{font-size:12px;color:var(--muted);margin-bottom:11px;display:flex;flex-direction:column;gap:3px}
+.ctouch{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-top:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;margin-bottom:10px}
+.tl{font-size:11px;color:var(--muted)}
+.tv{font-size:11px;font-weight:600}
+.tv-r{color:#b83030}.tv-o{color:#c0720a}.tv-g{color:var(--em)}
+.cbtns{display:flex;gap:6px;flex-wrap:wrap}
+.cbtn{padding:4px 9px;font-size:11px;border:1px solid var(--border);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-weight:500}
+.cbtn:hover{background:var(--em-l);color:var(--em-d);border-color:var(--em-b)}
+.cbtn.tc{background:var(--em-l);color:var(--em-d);border-color:var(--em-b)}
+.cbtn.dl{color:#b83030;border-color:#f0c0c0}.cbtn.dl:hover{background:#fff0f0}
+.cnote{font-size:12px;color:var(--muted);margin-top:9px;padding:6px 9px;background:#f9fafb;border-radius:6px;border-left:2px solid var(--em-b);font-style:italic;line-height:1.5}
+.pipeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.pcol{background:#f4f7f5;border-radius:var(--rl);padding:12px;min-height:200px}
+.pcol-hd{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.pct{background:white;border:1px solid var(--border);border-radius:20px;padding:1px 7px;font-size:11px}
+.plead{background:white;border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
+.plead:hover{border-color:var(--em-b)}
+.plead-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.plead-meta{font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.4}
+.plead-btns{display:flex;gap:5px}
+.pbtn{font-size:11px;padding:3px 8px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer}
+.pbtn:hover{background:var(--em-l);color:var(--em-d);border-color:var(--em-b)}
+.add-lr{width:100%;padding:7px;font-size:12px;border:1px dashed var(--border);border-radius:var(--r);background:transparent;color:var(--muted);cursor:pointer;margin-top:4px}
+.add-lr:hover{border-color:var(--em-b);color:var(--em)}
+.bsec{margin-bottom:1.5rem}
+.bsec-title{font-size:14px;font-weight:600;color:var(--em-d);margin-bottom:12px}
+.bday-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px}
+.bcard{background:#fff8f0;border:1px solid #f0d0b0;border-radius:var(--r);padding:11px 13px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.bcard:hover{border-color:#e0a070}
+.bav{width:34px;height:34px;border-radius:50%;background:#ffe0c0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#7a3800;flex-shrink:0}
+.bname{font-size:13px;font-weight:600}
+.bdate{font-size:11px;color:#8a5010}
+.blbl{font-size:11px;font-weight:600;color:#b83030}
+.hentry{padding:9px 0;border-bottom:1px solid #f0f0f0}
+.hentry:last-child{border-bottom:none}
+.hmeta{display:flex;gap:8px;align-items:center;margin-bottom:3px}
+.hdate{font-size:11px;color:var(--muted)}
+.hmethod{font-size:11px;font-weight:500;color:var(--em);background:var(--em-l);padding:1px 7px;border-radius:20px}
+.hnote{font-size:12px;color:var(--muted);font-style:italic}
+.mbk{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;padding:16px}
+.mbk.open{display:flex}
+.modal{background:white;border-radius:var(--rl);padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.msm{max-width:390px}.mlg{max-width:580px}
+.mtitle{font-size:17px;font-weight:600;margin-bottom:18px;color:var(--em-d)}
+.fr{margin-bottom:13px}
+.fl{font-size:12px;color:var(--muted);margin-bottom:4px;display:block;font-weight:500}
+.fi{width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:var(--r);background:white;color:#1a1a1a;font-family:inherit}
+.fi:focus{outline:2px solid var(--em);outline-offset:1px;border-color:transparent}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);grid-column:1/-1}
+@media(max-width:700px){.stats-row{grid-template-columns:repeat(3,1fr)}.pipeline{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.pipeline{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<div class="loading-screen" id="loading-screen">
-  <div class="spinner"></div>
-  <p>Loading Becky's CRM...</p>
+<div id="ls" style="position:fixed;inset:0;background:#f4f7f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999">
+  <div style="width:36px;height:36px;border:3px solid #b5ddc8;border-top-color:#1a7a52;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+  <p style="color:#6b7280;font-size:14px">Loading Becky's CRM...</p>
 </div>
-
 <div id="app" style="display:none">
 <div class="topbar">
   <div class="brand">
@@ -136,528 +128,548 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <div><div class="brand-name">callherbecky</div><div class="brand-sub">Sphere CRM · Realty87</div></div>
   </div>
   <div class="topbar-btns">
-    <div class="sync-status"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">synced</span></div>
-    <button class="tbtn" onclick="window.exportCSV()">⬇ export CSV</button>
-    <button class="tbtn" onclick="window.openAdd()">+ add contact</button>
+    <span class="sync-dot" id="sdot"></span>
+    <span class="sync-lbl" id="slbl">loading...</span>
+    <button class="tbtn" onclick="window.exportCSV()">⬇ CSV</button>
+    <button class="tbtn" onclick="window.openAdd()">+ contact</button>
   </div>
 </div>
-
 <div class="main">
   <div class="stats-row" id="stats-row"></div>
   <div class="nav-tabs">
     <button class="ntab active" id="tab-all" onclick="window.setTab('all',this)">all contacts</button>
-    <button class="ntab" id="tab-needs" onclick="window.setTab('needstouch',this)">needs touch <span class="badge br" id="b-over">0</span></button>
-    <button class="ntab" id="tab-leads" onclick="window.setTab('leads',this)">hot leads <span class="badge bp" id="b-leads">0</span></button>
-    <button class="ntab" id="tab-bday" onclick="window.setTab('bday',this)">birthdays <span class="badge bb" id="b-bday">0</span></button>
-    <button class="ntab" id="tab-recent" onclick="window.setTab('recent',this)">recently added</button>
-    <button class="ntab" id="tab-trans" onclick="window.setTab('transactions',this)">💰 transactions</button>
+    <button class="ntab" id="tab-needs" onclick="window.setTab('needs',this)">needs touch <span class="bdg br" id="b-needs">0</span></button>
+    <button class="ntab" id="tab-leads" onclick="window.setTab('leads',this)">hot leads <span class="bdg bp" id="b-leads">0</span></button>
+    <button class="ntab" id="tab-bday" onclick="window.setTab('bday',this)">birthdays <span class="bdg bb" id="b-bday">0</span></button>
+    <button class="ntab" id="tab-rec" onclick="window.setTab('recent',this)">recently added</button>
+    <button class="ntab" id="tab-trans" onclick="window.setTab('trans',this)">💰 transactions</button>
   </div>
-
-  <div id="view-contacts">
+  <div id="vc">
     <div class="toolbar">
-      <input class="search-box" type="text" placeholder="search name, phone, city, notes..." id="search-input" >
-      <select class="fsel" id="seg-filter" >
+      <input class="search-box" id="si" type="text" placeholder="search name, phone, city, notes...">
+      <select class="fsel" id="sf">
         <option value="">all segments</option>
         <option value="personal">personal</option><option value="family">family</option><option value="friend">friend</option>
         <option value="neighbor">neighbor</option><option value="coworker">work</option><option value="hr-block">HR Block</option>
         <option value="past-client">past client</option><option value="referral">referral</option><option value="other">other</option>
       </select>
     </div>
-    <div class="grid" id="contact-grid"></div>
+    <div class="grid" id="cg"></div>
   </div>
-
-  <div id="view-leads" style="display:none">
+  <div id="vl" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
-      <p style="font-size:13px;color:var(--muted)">Track potential buyers &amp; sellers through your pipeline</p>
-      <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="window.openAddLead()">+ add lead</button>
+      <p style="font-size:13px;color:var(--muted)">Track buyers &amp; sellers through your pipeline</p>
+      <button class="btn btn-p" style="font-size:12px;padding:6px 12px" onclick="window.openAddLead()">+ add lead</button>
     </div>
-    <div class="pipeline" id="pipeline"></div>
+    <div class="pipeline" id="pl"></div>
   </div>
-
-  <div id="view-bday" style="display:none">
-    <div class="bsec"><div class="bsec-title">🎂 upcoming — next 60 days</div><div class="bday-grid" id="bday-60"></div></div>
-    <div class="bsec"><div class="bsec-title" style="color:var(--muted)">this month</div><div class="bday-grid" id="bday-month"></div></div>
+  <div id="vb" style="display:none">
+    <div class="bsec"><div class="bsec-title">🎂 upcoming — next 60 days</div><div class="bday-grid" id="b60"></div></div>
+    <div class="bsec"><div class="bsec-title" style="color:var(--muted)">this month</div><div class="bday-grid" id="bmo"></div></div>
   </div>
-
-  <div id="view-trans" style="display:none">
+  <div id="vt" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-      <div id="trans-summary" style="display:flex;gap:12px;flex-wrap:wrap"></div>
-      <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="window.openAddTrans()">+ add transaction</button>
+      <div id="tsumm" style="display:flex;gap:12px;flex-wrap:wrap"></div>
+      <button class="btn btn-p" style="font-size:12px;padding:6px 12px" onclick="window.openAddTrans()">+ add transaction</button>
     </div>
-    <div id="trans-table"></div>
+    <div id="ttbl"></div>
   </div>
 </div>
 </div>
 
-<!-- Add/Edit Contact -->
-<div class="mbk" id="m-contact">
-  <div class="modal">
-    <div class="mtitle" id="mc-title">add contact</div>
-    <input type="hidden" id="e-id">
-    <div class="fr2">
-      <div><label class="fl">first name *</label><input class="fi" id="e-first"></div>
-      <div><label class="fl">last name</label><input class="fi" id="e-last"></div>
-    </div>
-    <div class="fr"><label class="fl">segment</label>
-      <select class="fi" id="e-seg">
-        <option value="personal">personal</option><option value="family">family</option><option value="friend">friend</option>
-        <option value="neighbor">neighbor</option><option value="coworker">work</option><option value="hr-block">HR Block</option>
-        <option value="past-client">past client</option><option value="referral">referral</option><option value="other">other</option>
-      </select>
-    </div>
-    <div class="fr2">
-      <div><label class="fl">phone</label><input class="fi" id="e-phone" type="tel"></div>
-      <div><label class="fl">date of birth (M/D/YYYY)</label><input class="fi" id="e-dob" placeholder="6/22/1990"></div>
-    </div>
-    <div class="fr"><label class="fl">email</label><input class="fi" id="e-email" type="email"></div>
-    <div class="fr"><label class="fl">address line 1</label><input class="fi" id="e-addr1" placeholder="211 3rd Street East"></div>
-    <div class="fr"><label class="fl">address line 2</label><input class="fi" id="e-addr2" placeholder="Apt 4B"></div>
-    <div class="fr2">
-      <div><label class="fl">city</label><input class="fi" id="e-city" placeholder="Cedar Rapids"></div>
-      <div><label class="fl">state</label><input class="fi" id="e-state" placeholder="IA" maxlength="2"></div>
-    </div>
-    <div class="fr2">
-      <div><label class="fl">zip</label><input class="fi" id="e-zip" placeholder="52315" maxlength="10"></div>
-      <div></div>
-    </div>
-    <div class="fr"><label class="fl">spouse / partner</label><input class="fi" id="e-spouse"></div>
-    <div class="fr"><label class="fl">touch goal cadence</label>
-      <select class="fi" id="e-touch">
-        <option value="30">monthly</option><option value="60">every 2 months</option>
-        <option value="90" selected>quarterly</option><option value="180">every 6 months</option><option value="365">annually</option>
-      </select>
-    </div>
-    <div class="fr2">
-      <div><label class="fl">specific follow-up date</label><input class="fi" id="e-followup-date" type="date"></div>
-      <div><label class="fl">follow-up reason</label><input class="fi" id="e-followup-note" placeholder="e.g. call about listing"></div>
-    </div>
-    <div class="fr"><label class="fl">notes</label><textarea class="fi" id="e-notes" rows="3"></textarea></div>
-    <div class="mfooter">
-      <button class="btn btn-ghost" onclick="window.cm('m-contact')">cancel</button>
-      <button class="btn btn-primary" onclick="window.saveContact()">save contact</button>
-    </div>
+<!-- Contact Modal -->
+<div class="mbk" id="mc"><div class="modal">
+  <div class="mtitle" id="mc-ttl">add contact</div>
+  <input type="hidden" id="e-id">
+  <div class="fr2">
+    <div><label class="fl">first name *</label><input class="fi" id="e-first"></div>
+    <div><label class="fl">last name</label><input class="fi" id="e-last"></div>
   </div>
-</div>
+  <div class="fr"><label class="fl">segment</label>
+    <select class="fi" id="e-seg">
+      <option value="personal">personal</option><option value="family">family</option><option value="friend">friend</option>
+      <option value="neighbor">neighbor</option><option value="coworker">work</option><option value="hr-block">HR Block</option>
+      <option value="past-client">past client</option><option value="referral">referral</option><option value="other">other</option>
+    </select>
+  </div>
+  <div class="fr2">
+    <div><label class="fl">phone</label><input class="fi" id="e-phone" type="tel"></div>
+    <div><label class="fl">date of birth (M/D/YYYY)</label><input class="fi" id="e-dob" placeholder="6/22/1990"></div>
+  </div>
+  <div class="fr"><label class="fl">email</label><input class="fi" id="e-email" type="email"></div>
+  <div class="fr"><label class="fl">address line 1</label><input class="fi" id="e-a1"></div>
+  <div class="fr"><label class="fl">address line 2</label><input class="fi" id="e-a2"></div>
+  <div class="fr2">
+    <div><label class="fl">city</label><input class="fi" id="e-city"></div>
+    <div><label class="fl">state</label><input class="fi" id="e-state" maxlength="2"></div>
+  </div>
+  <div class="fr2">
+    <div><label class="fl">zip</label><input class="fi" id="e-zip" maxlength="10"></div>
+    <div><label class="fl">spouse / partner</label><input class="fi" id="e-spouse"></div>
+  </div>
+  <div class="fr"><label class="fl">touch goal cadence</label>
+    <select class="fi" id="e-tg">
+      <option value="30">monthly</option><option value="60">every 2 months</option>
+      <option value="90" selected>quarterly</option><option value="180">every 6 months</option><option value="365">annually</option>
+    </select>
+  </div>
+  <div class="fr2">
+    <div><label class="fl">specific follow-up date</label><input class="fi" id="e-fd" type="date"></div>
+    <div><label class="fl">follow-up reason</label><input class="fi" id="e-fn" placeholder="e.g. call about listing"></div>
+  </div>
+  <div class="fr"><label class="fl">notes</label><textarea class="fi" id="e-notes" rows="3"></textarea></div>
+  <div class="mfoot">
+    <button class="btn btn-g" onclick="window.cm('mc')">cancel</button>
+    <button class="btn btn-p" onclick="window.saveContact()">save contact</button>
+  </div>
+</div></div>
 
 <!-- Touch Modal -->
-<div class="mbk" id="m-touch">
-  <div class="modal modal-sm">
-    <div class="mtitle">log a touch</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:13px" id="touch-name"></p>
-    <div class="fr"><label class="fl">how did Becky reach out?</label>
-      <select class="fi" id="t-method">
-        <option value="text">text message</option><option value="call">phone call</option><option value="email">email</option>
-        <option value="in-person">in person</option><option value="social">social media</option>
-        <option value="card">handwritten card</option><option value="pop-by">pop-by / gift</option>
-      </select>
-    </div>
-    <div class="fr"><label class="fl">note (optional)</label><textarea class="fi" id="t-note" rows="2"></textarea></div>
-    <div class="mfooter">
-      <button class="btn btn-ghost" onclick="window.cm('m-touch')">cancel</button>
-      <button class="btn btn-primary" onclick="window.saveTouch()">log touch</button>
-    </div>
+<div class="mbk" id="mt"><div class="modal msm">
+  <div class="mtitle">log a touch</div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:13px" id="tname"></p>
+  <div class="fr"><label class="fl">how did Becky reach out?</label>
+    <select class="fi" id="t-method">
+      <option value="text">text message</option><option value="call">phone call</option><option value="email">email</option>
+      <option value="in-person">in person</option><option value="social">social media</option>
+      <option value="card">handwritten card</option><option value="pop-by">pop-by / gift</option>
+    </select>
   </div>
-</div>
+  <div class="fr"><label class="fl">note (optional)</label><textarea class="fi" id="t-note" rows="2" placeholder="What did you talk about?"></textarea></div>
+  <div class="mfoot">
+    <button class="btn btn-g" onclick="window.cm('mt')">cancel</button>
+    <button class="btn btn-p" onclick="window.saveTouch()">log touch</button>
+  </div>
+</div></div>
 
 <!-- History Modal -->
-<div class="mbk" id="m-hist">
-  <div class="modal modal-lg">
-    <div class="mtitle" id="hist-title">contact history</div>
-    <div id="hist-body"></div>
-    <div class="mfooter"><button class="btn btn-ghost" onclick="window.cm('m-hist')">close</button></div>
-  </div>
-</div>
+<div class="mbk" id="mh"><div class="modal mlg">
+  <div class="mtitle" id="h-ttl">contact history</div>
+  <div id="h-body"></div>
+  <div class="mfoot"><button class="btn btn-g" onclick="window.cm('mh')">close</button></div>
+</div></div>
 
-<!-- Add Lead Modal -->
-<div class="mbk" id="m-lead">
-  <div class="modal modal-sm">
-    <div class="mtitle">add lead</div>
-    <div class="fr"><label class="fl">contact</label><select class="fi" id="lead-contact"></select></div>
-    <div class="fr"><label class="fl">stage</label>
-      <select class="fi" id="lead-stage">
-        <option value="aware">aware</option><option value="interested">interested</option>
-        <option value="active">active</option><option value="closed">closed</option>
-      </select>
-    </div>
-    <div class="fr"><label class="fl">buyer / seller</label>
-      <select class="fi" id="lead-type">
-        <option value="buyer">buyer</option><option value="seller">seller</option><option value="both">buyer + seller</option>
-      </select>
-    </div>
-    <div class="fr"><label class="fl">timeline note</label><input class="fi" id="lead-note"></div>
-    <div class="mfooter">
-      <button class="btn btn-ghost" onclick="window.cm('m-lead')">cancel</button>
-      <button class="btn btn-primary" onclick="window.saveLead()">add lead</button>
-    </div>
+<!-- Lead Modal -->
+<div class="mbk" id="ml"><div class="modal msm">
+  <div class="mtitle">add lead</div>
+  <div class="fr"><label class="fl">contact</label><select class="fi" id="lc"></select></div>
+  <div class="fr"><label class="fl">stage</label>
+    <select class="fi" id="ls-sel">
+      <option value="aware">aware</option><option value="interested">interested</option>
+      <option value="active">active</option><option value="closed">closed</option>
+    </select>
   </div>
-</div>
+  <div class="fr"><label class="fl">buyer / seller</label>
+    <select class="fi" id="lt">
+      <option value="buyer">buyer</option><option value="seller">seller</option><option value="both">buyer + seller</option>
+    </select>
+  </div>
+  <div class="fr"><label class="fl">timeline note</label><input class="fi" id="ln" placeholder="e.g. wants to buy summer 2026"></div>
+  <div class="mfoot">
+    <button class="btn btn-g" onclick="window.cm('ml')">cancel</button>
+    <button class="btn btn-p" onclick="window.saveLead()">add lead</button>
+  </div>
+</div></div>
 
 <!-- Transaction Modal -->
-<div class="mbk" id="m-trans">
-  <div class="modal" style="max-width:540px">
-    <div class="mtitle" id="mt-title">add transaction</div>
-    <input type="hidden" id="tt-id">
-    <div class="fr2">
-      <div><label class="fl">client name *</label><input class="fi" id="tt-client"></div>
-      <div><label class="fl">close date</label><input class="fi" id="tt-date" type="date"></div>
-    </div>
-    <div class="fr2">
-      <div><label class="fl">sale price ($) *</label><input class="fi" id="tt-price" type="number" oninput="window.calcTrans()"></div>
-      <div><label class="fl">agent</label><input class="fi" id="tt-agent" value="Becky Oxford"></div>
-    </div>
-    <div class="fr2">
-      <div><label class="fl">commission %</label><input class="fi" id="tt-comm" type="number" step="0.1" value="3.5" oninput="window.calcTrans()"></div>
-      <div><label class="fl">referral %</label><input class="fi" id="tt-ref" type="number" step="0.1" value="0" oninput="window.calcTrans()"></div>
-    </div>
-    <div class="fr2">
-      <div><label class="fl">Becky's split %</label><input class="fi" id="tt-split" type="number" value="70" oninput="window.calcTrans()"></div>
-      <div><label class="fl">federal tax %</label><input class="fi" id="tt-fed" type="number" value="20" oninput="window.calcTrans()"></div>
-    </div>
-    <div class="fr2">
-      <div><label class="fl">state tax %</label><input class="fi" id="tt-state" type="number" value="10" oninput="window.calcTrans()"></div>
-      <div></div>
-    </div>
-    <div id="tt-preview" style="background:#f4f7f5;border-radius:10px;padding:14px;margin-bottom:14px;display:none">
-      <div style="font-weight:600;color:var(--em-d);margin-bottom:10px;font-size:13px">breakdown preview</div>
-      <div id="tt-preview-rows"></div>
-    </div>
-    <div class="fr"><label class="fl">notes</label><textarea class="fi" id="tt-notes" rows="2"></textarea></div>
-    <div class="mfooter">
-      <button class="btn btn-ghost" onclick="window.cm('m-trans')">cancel</button>
-      <button class="btn btn-primary" onclick="window.saveTrans()">save transaction</button>
-    </div>
+<div class="mbk" id="mtr"><div class="modal" style="max-width:540px">
+  <div class="mtitle" id="mtr-ttl">add transaction</div>
+  <input type="hidden" id="tt-id">
+  <div class="fr2">
+    <div><label class="fl">client name *</label><input class="fi" id="tt-cl"></div>
+    <div><label class="fl">close date</label><input class="fi" id="tt-dt" type="date"></div>
   </div>
-</div>
+  <div class="fr2">
+    <div><label class="fl">sale price ($) *</label><input class="fi" id="tt-pr" type="number" oninput="window.calcT()"></div>
+    <div><label class="fl">agent</label><input class="fi" id="tt-ag" value="Becky Oxford"></div>
+  </div>
+  <div class="fr2">
+    <div><label class="fl">commission %</label><input class="fi" id="tt-co" type="number" step="0.1" value="3.5" oninput="window.calcT()"></div>
+    <div><label class="fl">referral %</label><input class="fi" id="tt-re" type="number" step="0.1" value="0" oninput="window.calcT()"></div>
+  </div>
+  <div class="fr2">
+    <div><label class="fl">Becky split %</label><input class="fi" id="tt-sp" type="number" value="70" oninput="window.calcT()"></div>
+    <div><label class="fl">federal tax %</label><input class="fi" id="tt-fe" type="number" value="20" oninput="window.calcT()"></div>
+  </div>
+  <div class="fr2">
+    <div><label class="fl">state tax %</label><input class="fi" id="tt-st" type="number" value="10" oninput="window.calcT()"></div>
+    <div></div>
+  </div>
+  <div id="tp" style="background:#f4f7f5;border-radius:10px;padding:14px;margin-bottom:14px;display:none">
+    <div style="font-weight:600;color:var(--em-d);margin-bottom:10px;font-size:13px">breakdown preview</div>
+    <div id="tpr"></div>
+  </div>
+  <div class="fr"><label class="fl">notes</label><textarea class="fi" id="tt-no" rows="2"></textarea></div>
+  <div class="mfoot">
+    <button class="btn btn-g" onclick="window.cm('mtr')">cancel</button>
+    <button class="btn btn-p" onclick="window.saveTrans()">save transaction</button>
+  </div>
+</div></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import{getFirestore,collection,getDocs,addDoc,updateDoc,deleteDoc,doc}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+const fb=initializeApp({apiKey:"AIzaSyDLdu_dBD98z7um8rMUsya_GV-HuN36EvU",authDomain:"becky-oxford-real-estate-crm.firebaseapp.com",projectId:"becky-oxford-real-estate-crm",storageBucket:"becky-oxford-real-estate-crm.firebasestorage.app",messagingSenderId:"378102880603",appId:"1:378102880603:web:ef2473c390277921f4627e"});
+const db=getFirestore(fb);
+let contacts=[],leads=[],transactions=[],tab='all',tid=null,hid=null;
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDLdu_dBD98z7um8rMUsya_GV-HuN36EvU",
-  authDomain: "becky-oxford-real-estate-crm.firebaseapp.com",
-  projectId: "becky-oxford-real-estate-crm",
-  storageBucket: "becky-oxford-real-estate-crm.firebasestorage.app",
-  messagingSenderId: "378102880603",
-  appId: "1:378102880603:web:ef2473c390277921f4627e"
-};
+function sy(s){const d=document.getElementById('sdot'),l=document.getElementById('slbl');if(!d)return;if(s==='s'){d.style.background='#fbbf24';l.textContent='saving...';}else if(s==='e'){d.className='sync-dot err';l.textContent='error';}else{d.className='sync-dot ok';l.textContent='synced';}}
+async function fga(c){const s=await getDocs(collection(db,c));return s.docs.map(d=>({id:d.id,...d.data()}));}
+async function fad(c,d){sy('s');try{const r=await addDoc(collection(db,c),d);sy('ok');return r.id;}catch(e){sy('e');throw e;}}
+async function fup(c,i,d){sy('s');try{await updateDoc(doc(db,c,i),d);sy('ok');}catch(e){sy('e');throw e;}}
+async function fdl(c,i){sy('s');try{await deleteDoc(doc(db,c,i));sy('ok');}catch(e){sy('e');throw e;}}
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const SL=[{contactName:'Jamie Lerch',stage:'interested',type:'seller',note:'Wants to sell this year'},{contactName:'Jessica Crabtree',stage:'interested',type:'seller',note:'Call back in August'},{contactName:'Cecilia Mejia',stage:'aware',type:'buyer',note:'New construction'},{contactName:'Luzieann Bernell',stage:'aware',type:'buyer',note:'Thinking of buying'},{contactName:'Roy Dana',stage:'aware',type:'buyer',note:'Summer 2026'},{contactName:'Scott Venenga',stage:'aware',type:'buyer',note:'Wants to buy'}];
 
-let contacts = [], leads = [], transactions = [], currentTab = 'all', touchingId = null, histId = null;
-
-function setSyncing(state) {
-  const dot = document.getElementById('sync-dot');
-  const lbl = document.getElementById('sync-label');
-  if (state === 'syncing') { dot.className='sync-dot syncing'; lbl.textContent='saving...'; }
-  else if (state === 'error') { dot.className='sync-dot error'; lbl.textContent='sync error'; }
-  else { dot.className='sync-dot'; lbl.textContent='synced'; }
+async function load(){
+  try{
+    contacts=await fga('contacts');
+    leads=await fga('leads');
+    transactions=await fga('transactions');
+    if(leads.length===0){for(const l of SL){const id=await fad('leads',l);leads.push({id,...l});}}
+  }catch(e){console.error(e);sy('e');}
+  document.getElementById('ls').style.display='none';
+  document.getElementById('app').style.display='block';
+  sy('ok');render();
 }
 
-// ── FIRESTORE HELPERS ─────────────────────────────────────
-async function fbGetAll(col) {
-  const snap = await getDocs(collection(db, col));
-  return snap.docs.map(d => ({id: d.id, ...d.data()}));
+function ini(c){return((c.first||'?')[0]+(c.last||'?')[0]).toUpperCase()}
+function segL(s){return{personal:'personal',family:'family',friend:'friend',neighbor:'neighbor',coworker:'work','hr-block':'HR Block','past-client':'past client',referral:'referral',other:'other'}[s]||'other'}
+function dbu(dob){
+  if(!dob)return null;
+  try{const p=dob.split('/');if(p.length<2)return null;
+  const m=parseInt(p[0],10)-1,d=parseInt(p[1],10);if(isNaN(m)||isNaN(d))return null;
+  const now=new Date();let nx=new Date(now.getFullYear(),m,d);
+  const tod=new Date();tod.setHours(0,0,0,0);
+  if(nx<tod)nx=new Date(now.getFullYear()+1,m,d);
+  return Math.ceil((nx-Date.now())/86400000);}catch(e){return null;}
 }
-async function fbAdd(col, data) {
-  setSyncing('syncing');
-  try { const ref = await addDoc(collection(db, col), data); setSyncing('ok'); return ref.id; }
-  catch(e) { setSyncing('error'); throw e; }
+function bds(dob){if(!dob)return'';const p=dob.split('/');const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return(mn[parseInt(p[0],10)-1]||'')+' '+parseInt(p[1],10)}
+function dsi(iso){if(!iso)return null;return Math.floor((Date.now()-new Date(iso))/86400000)}
+function fl(c){
+  if(!c.followupDate)return'';
+  const fu=new Date(c.followupDate+'T12:00:00'),tod=new Date();tod.setHours(0,0,0,0);
+  const ov=fu<tod,col=ov?'#b83030':'#1a5da0';
+  return'<div style="font-size:11px;font-weight:500;color:'+col+'">📅 follow up: '+fu.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+(c.followupNote?' — '+c.followupNote:'')+'</div>';
 }
-async function fbUpdate(col, id, data) {
-  setSyncing('syncing');
-  try { await updateDoc(doc(db, col, id), data); setSyncing('ok'); }
-  catch(e) { setSyncing('error'); throw e; }
-}
-async function fbDelete(col, id) {
-  setSyncing('syncing');
-  try { await deleteDoc(doc(db, col, id)); setSyncing('ok'); }
-  catch(e) { setSyncing('error'); throw e; }
-}
-async function fbSet(col, id, data) {
-  setSyncing('syncing');
-  try { await setDoc(doc(db, col, id), data); setSyncing('ok'); }
-  catch(e) { setSyncing('error'); throw e; }
-}
-
-// ── SEED DATA ─────────────────────────────────────────────
-const PRIMARY=[
-  {first:'Cyndy',last:'Staton',seg:'personal',phone:'319-721-6921',city:'IA',notes:'Loves chocolate'},
-  {first:'Phil',last:'Vos',seg:'coworker',phone:'319-693-8678',city:'IA',notes:'Met at show June 2009'},
-  {first:'Ashley',last:'',seg:'family',phone:'717-598-1474',notes:'Great plumber. Reasonably priced.'},
-  {first:'Kim',last:'Balvanz',seg:'other',phone:'319-554-5031'},{first:'Monica',last:'',seg:'other',phone:'641-799-0904'},
-  {first:'Julia',last:'Coons',seg:'other',phone:'319-654-4171'},{first:'Sonja',last:'',seg:'other',phone:'319-558-9857'},
-  {first:'April',last:'Carlson',seg:'other',phone:'319-202-4650'},{first:'Sydney',last:'Miller',seg:'other'},
-  {first:'Hailey',last:'Sobaski',seg:'other',phone:'319-677-6076',spouseRef:'Coy Sobaski'},
-  {first:'Carrie',last:'Oxford',seg:'family',phone:'810-394-4561',spouseRef:'Darren Oxford'},
-  {first:'Natasha',last:'Palm',seg:'other',phone:'484-516-8272'},{first:'Sylvia',last:'',seg:'other'},
-  {first:'Andrew',last:'Pearson',seg:'other',phone:'941-400-0612',city:'FL',spouseRef:'Andrea Pearson'},
-  {first:'Danielle',last:'Sweet',seg:'other',phone:'319-213-2817'},
-  {first:'Chuck',last:'McCluskey',seg:'other',phone:'319-360-2500',spouseRef:'Gillian DiStefano'},
-  {first:'Jill',last:'',seg:'other',phone:'319-270-3467'},{first:'Sharon',last:'Tauke',seg:'other',phone:'319-329-5110'},
-  {first:'Lacy',last:'',seg:'other',phone:'319-521-8049'},
-  {first:'Doug',last:'Boddicker',seg:'neighbor',phone:'319-721-8795',city:'Newhall',state:'IA',notes:'Newhall Mayor'},
-  {first:'Becky',last:'',seg:'neighbor',notes:'Post Office'},{first:'Nancy',last:'Hughes',seg:'other'},
-  {first:'Audrey',last:'Wilson',seg:'hr-block',phone:'319-280-6846',email:'awilson0931@gmail.com',addr1:'640 22nd Ave SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'6/22/1990',notes:'Lower income grants info, single mom 5 kids, very nice'},
-  {first:'Martrell',last:'Perkins',seg:'hr-block',phone:'319-450-8010',email:'martrellperkins@yahoo.com',addr1:'305 Pirie Dr',city:'Hiawatha',state:'IA',zip:'52233',dob:'8/7/1989',notes:'Steady Walmart employment, 3 kids (Martrell Jr, Javion age 3)'},
-  {first:'Lonnie',last:'Baylark',seg:'hr-block',phone:'319-538-3496',email:'Lonniebaylark@gmail.com',addr1:'628 20th Street NE',city:'Cedar Rapids',state:'IA',zip:'52402',dob:'9/17/1960',spouseRef:'Dana Ellis',notes:'Grandkids live in house. Works at Parker Hannifin, very nice couple'},
-  {first:'Robin',last:'McDaniel',seg:'hr-block',phone:'319-551-6992',email:'Robinmcdaniel2500@gmail.com',addr1:'1155 11th Street',city:'Marion',state:'IA',zip:'52302',dob:'10/17/1956',notes:'Housekeeping at Mercy. Loves haunted stuff. Wants Edinburgh Manor'},
-  {first:'Anais',last:'Williams',seg:'hr-block',phone:'319-409-3242',email:'williamsanais@gmail.com',addr1:'1324 36th Street SE',city:'Cedar Rapids',state:'IA',zip:'52403',dob:'5/11/1985',notes:'Daughter: Kamiyah, Sons: Brian, Aziah'},
-  {first:'Jamie',last:'Lerch',seg:'hr-block',phone:'319-550-5755',email:'jdlerch@outlook.com',addr1:'2231 Lauren Drive SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'5/12/1974',notes:'Son Jace (special needs). Wants to sell house this year'},
-  {first:'Harold',last:'Briceland',seg:'hr-block',phone:'316-258-4456',email:'h.briceland@cox.net',addr1:'3012 Outlook Drive',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'11/16/1953'},
-  {first:'Thomas',last:'Bearns',seg:'hr-block',phone:'319-362-7297',addr1:'107 Red Wing Road SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'6/22/1955'},
-  {first:'Judy',last:'Benson',seg:'hr-block',addr1:'1795 Lake Manor Road NE',city:'Solon',state:'IA',zip:'52333',dob:'5/30/1943',spouseRef:'Larry Benson'},
-  {first:'Molly',last:'Bowser',seg:'hr-block',phone:'319-202-2389',email:'kinnickparkercayden@gmail.com',addr1:'402 Maiden Street',city:'Center Point',state:'IA',zip:'52213',dob:'9/25/1990',notes:'Son Parker'},
-  {first:'Megan',last:'Braden',seg:'hr-block',phone:'714-457-4253',email:'mklawson0728@gmail.com',addr1:'549 Country Hill Lane NE',city:'Cedar Rapids',state:'IA',zip:'52402',dob:'7/28/1992',spouseRef:'Dillon Braden'},
-  {first:'Makenna',last:'Breuer',seg:'hr-block',phone:'563-880-0669',email:'makennabreuer@gmail.com',addr1:'4621 Mission Avenue',city:'Marion',state:'IA',zip:'52302',dob:'9/9/2004'},
-  {first:'Mary',last:'Barnabas',seg:'hr-block',phone:'319-521-2216',email:'mbarnabas16@gmail.com',addr1:'3121 6th Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'11/7/1975'},
-  {first:'Blake',last:'Barkema',seg:'hr-block',phone:'319-270-1995',email:'barkema16blake@gmail.com',addr1:'89 Grant Ave',city:'Mechanicsville',state:'IA',zip:'52306',dob:'10/28/1997'},
-  {first:'Kasie',last:'Banks',seg:'hr-block',phone:'319-640-9951',email:'limitlessluv86@gmail.com',addr1:'275 12th Ave SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'11/16/1986'},
-  {first:'Hannah',last:'Baier',seg:'hr-block',phone:'319-412-4627',email:'hannah.baier31@gmail.com',addr1:'1306 Burch Ave NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'11/29/1990'},
-  {first:'Kimberly',last:'Bachman',seg:'hr-block',phone:'319-573-8097',email:'kimbachman@outlook.com',addr1:'630 26th Street SE',city:'Cedar Rapids',state:'IA',zip:'52403',dob:'10/7/1962'},
-  {first:'Trevor',last:'Avis',seg:'hr-block',phone:'319-929-2730',addr1:'2201 Reynolds Ave SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'8/4/1969'},
-  {first:'Jessica',last:'Anderson',seg:'hr-block',phone:'319-431-6176',email:'fawnanderson3@gmail.com',addr1:'645 36th Street NE',city:'Cedar Rapids',state:'IA',zip:'52402',dob:'12/29/1978'},
-  {first:'Minea',last:'Aldana Fuentes',seg:'hr-block',phone:'319-270-4876',email:'mineananez@aol.com',addr1:'1207 Winchell Drive NE',city:'Cedar Rapids',state:'IA',zip:'52402',dob:'7/18/1980'},
-  {first:'Bonnie',last:'Ahrens',seg:'hr-block',phone:'319-538-5014',addr1:'3140 Wilson Ave SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'6/12/1946'},
-  {first:'Shannon',last:'Mettlin',seg:'hr-block',phone:'319-206-1385',email:'smettlin@yahoo.com',addr1:'171 5th Ave',city:'Marion',state:'IA',zip:'52302',dob:'2/19/1978'},
-  {first:'Mark',last:'Brown',seg:'hr-block',phone:'319-893-2712',email:'brothermbrown@yahoo.com',addr1:'326 12th Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'9/5/1963',spouseRef:'Karl Brown'},
-  {first:'Amanda',last:'Matheny',seg:'hr-block',phone:'319-784-8516',email:'mandymatheny2018@gmail.com',addr1:'2553 N Ave NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'3/10/1983',spouseRef:'Nathan Matheny',notes:'Daughter Alana, Son Ryker'},
-  {first:'Cecilia',last:'Mejia',seg:'hr-block',phone:'808-892-0420',email:'mejia.s.cecilia94@gmail.com',addr1:'118 Clover Drive SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'7/27/1997',notes:'Wants open houses / new construction. From CA 2024. Has house with brother'},
-  {first:'Samuel',last:'Padgett',seg:'hr-block',phone:'309-337-7840',email:'allisonp323@gmail.com',addr1:'822 8th Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'7/19/1992',spouseRef:'Allison Padgett',notes:'Sons Gabriel, Levi, and Callum'},
-  {first:'Louis',last:'Janecek II',seg:'hr-block',phone:'319-540-0391',email:'louisjanecek@yahoo.com',addr1:'6300 Blairs Ferry Rd',city:'Cedar Rapids',state:'IA',zip:'52411',dob:'4/20/1980',spouseRef:'Pamela Browns',notes:'Sons Jackson and Lincoln'},
-  {first:'Luzieann',last:'Bernell',seg:'hr-block',phone:'319-560-7844',email:'luzieannb@gmail.com',addr1:'2407 Buckingham Drive NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'3/21/2003',notes:'Thinking of buying'},
-  {first:'Jesse',last:'Oleary',seg:'hr-block',phone:'319-440-0582',email:'olearyjesse@yahoo.com',addr1:'615 35th Street SE',city:'Cedar Rapids',state:'IA',zip:'52403',dob:'1/22/1990',notes:'Daughter Emma'},
-  {first:'Tara',last:'Hart',seg:'hr-block',phone:'319-202-1307',email:'tarashart1981@gmail.com',addr1:'3071 6th Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'7/31/1981',notes:'From FL, 2 daughters, dad died Nov 2025'},
-  {first:'Roy',last:'Dana',seg:'hr-block',phone:'319-540-9539',email:'roydana92@yahoo.com',addr1:'115 Cynthia Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'4/23/1992',notes:'Wants to buy a house summer 2026'},
-  {first:'Brian',last:'McLaren',seg:'hr-block',phone:'515-669-4843',email:'twisterbuster@gmail.com',addr1:'2670 6th Street',city:'Marion',state:'IA',zip:'52302',dob:'7/6/1979',spouseRef:'Crystal McLaren',notes:'Oldest child married, expecting baby April 2026'},
-  {first:'Rebecca',last:'Oxford',seg:'personal',phone:'319-480-5504',email:'beckybuck29@gmail.com',addr1:'211 3rd Street East',city:'Newhall',state:'IA',zip:'52315',dob:'9/6/1980',spouseRef:'Ryan Oxford',notes:"That's Becky! Real estate agent at Realty87"},
-  {first:'Jonathan',last:'Sadler',seg:'hr-block',phone:'563-571-0528',email:'jsadler888s@gmail.com',addr1:'100 1st Street NE',city:'Cedar Rapids',state:'IA',zip:'52401',dob:'5/23/1988'},
-  {first:'Jason',last:'Coad',seg:'hr-block',phone:'319-551-2699',email:'onejasoncoad@yahoo.com',addr1:'2630 Hickory Drive SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'6/12/1978',spouseRef:'Miranda Coad'},
-  {first:'Chelsea',last:'Howell',seg:'hr-block',phone:'319-487-3192',email:'chelseahowell05@gmail.com',addr1:'5418 D Ave NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'5/8/1993',notes:'Son Caiden, Daughter Madilynn'},
-  {first:'James',last:'Finn',seg:'hr-block',phone:'815-988-1116',email:'jlfinn64@gmail.com',addr1:'4534 Sugar Pine Drive NE',city:'Cedar Rapids',state:'IA',zip:'52402',dob:'1/18/1965',spouseRef:'Tina Kilker'},
-  {first:'Austin',last:'Lawrence',seg:'hr-block',phone:'319-202-3764',email:'austinl6974@gmail.com',addr1:'3232 Huxley Lane',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'5/15/2003'},
-  {first:'Generro',last:'William',seg:'hr-block',phone:'319-206-2621',email:'generowilliam00@gmail.com',addr1:'1619 C Ave',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'8/29/2003'},
-  {first:'Sergio',last:'Andrade',seg:'hr-block',phone:'319-461-5052',email:'isabelguiterreza629@gmail.com',addr1:'706 G Avenue NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'11/4/1995',spouseRef:'Alondra Gutierrez',notes:'Son Sergio, Daughters: Kylie, Kailah, Krystal'},
-  {first:'Kristina',last:'Helmrichs',seg:'hr-block',phone:'319-213-0616',email:'kroby.marie80@gmail.com',addr1:'1016 1st Ave NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'12/11/1980',spouseRef:'Travis Helmrichs',notes:'Daughter Charlee, Son Jaxson'},
-  {first:'Rachelle',last:'Brown',seg:'hr-block',phone:'319-540-9875',email:'rachellebrown2002@yahoo.com',addr1:'301 Blaine Street',city:'Guernsey',state:'IA',zip:'52221',dob:'3/16/2002'},
-  {first:'Dakota',last:'Floyd',seg:'hr-block',phone:'319-497-2313',email:'floyd0482@gmail.com',addr1:'902 A Ave NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'3/17/1992'},
-  {first:'Brittaney',last:'Ramey',seg:'hr-block',phone:'319-531-0445',email:'therameyfamily23@outlook.com',addr1:'1922 Eastern Drive SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'7/2/1994',spouseRef:'Jonathan Ramey'},
-  {first:'Corey',last:'Matheny',seg:'hr-block',phone:'319-560-3042',email:'mfvidez@gmail.com',addr1:'1111 16th Street',city:'Belle Plaine',state:'IA',zip:'52208',dob:'8/23/1990',notes:'Daughters: Abby, Ava; Son: Nathan'},
-  {first:'Amy',last:'Caughron',seg:'hr-block',phone:'319-414-3478',email:'amycaughron3@gmail.com',addr1:'1101 2nd Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'7/13/1981',notes:'Son: Dayton'},
-  {first:'Gregg',last:'Gorman Sr.',seg:'hr-block',phone:'319-531-0709',email:'gregggormansr@gmail.com',addr1:'289 Wilson Ave SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'10/23/1960'},
-  {first:'Carl',last:'Cross',seg:'hr-block',phone:'319-206-5267',email:'crossc976@gmail.com',addr1:'2474 C Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'3/3/1961'},
-  {first:'Joshua',last:'Bervid',seg:'hr-block',phone:'319-213-3959',email:'bervid22@gmail.com',addr1:'11 B Ave',city:'Newhall',state:'IA',zip:'52315',dob:'5/11/1994',spouseRef:'Krystal Bervid',notes:'Daughters: Breezzy, Sylvia, Ivy, Lucille; Son: Lumiere'},
-  {first:'Sandra',last:'Carolan',seg:'hr-block',phone:'319-249-1153',addr1:'417 Parkland Drive SE',city:'Cedar Rapids',state:'IA',zip:'52403',dob:'6/22/1950'},
-  {first:'Raejeanne',last:'Swore',seg:'hr-block',phone:'319-249-1153',addr1:'417 Parkland Drive SE',city:'Cedar Rapids',state:'IA',zip:'52403',dob:'5/20/1957'},
-  {first:'Selene',last:'Williams',seg:'hr-block',phone:'319-360-3389',email:'wselene75@gmail.com',addr1:'610 5th Street NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'12/6/1975'},
-  {first:'Christopher',last:'Steines',seg:'hr-block',phone:'319-550-1247',email:'csteines424@icloud.com',addr1:'3315 Remington Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'8/14/1990',spouseRef:'Crystal Steines',notes:'Sons: Shayde, Sylas, Soaryn, Sawyer; Daughter: Ember'},
-  {first:'Jacob',last:'Marshall',seg:'hr-block',phone:'319-721-4913',email:'jlbm8791@gmail.com',addr1:'415 First Street North PO Box 425',city:'Walford',state:'IA',zip:'52351',dob:'4/7/1978'},
-  {first:'Jessica',last:'Nachazel',seg:'hr-block',phone:'641-481-1665',email:'nachazeljessica@gmail.com',addr1:'2143 C Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'12/11/2001'},
-  {first:'Shawn',last:'Purk',seg:'hr-block',phone:'515-971-8003',email:'spurk1278@gmail.com',addr1:'2143 C Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'6/12/1997',notes:'Son: Atlas'},
-  {first:'Scott',last:'Venenga',seg:'hr-block',phone:'319-213-2158',email:'scott_venenga94@yahoo.com',addr1:'5035 Johnson Ave SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'8/11/1971',notes:'Wants to buy, likes fishing, palomino trout story'},
-  {first:'Bradley',last:'Gire',seg:'hr-block',phone:'319-202-7535',email:'girebrad@yahoo.com',addr1:'980 Eisenhower Road',city:'Hiawatha',state:'IA',zip:'52233',dob:'8/3/1985',notes:'Engaged in 2024'},
-  {first:'Jessica',last:'Crabtree',seg:'hr-block',phone:'319-450-2360',email:'jessica31305@yahoo.com',addr1:'1299 Staub Court NE',city:'Cedar Rapids',state:'IA',zip:'52402',dob:'8/31/1990',notes:'Wants to sell — call back in August'},
-  {first:'Bret',last:'Mathews',seg:'hr-block',phone:'573-338-5642',email:'bretmathews7@gmail.com',addr1:'1605 48th Street NE',city:'Cedar Rapids',state:'IA',zip:'52402',dob:'10/13/1958'},
-  {first:'Isabelle',last:'Meis',seg:'hr-block',phone:'319-775-1871',email:'izzymeis0002@gmail.com',addr1:'2535 Highland Drive',city:'Marion',state:'IA',zip:'52302',dob:'7/9/2000',notes:'Send NFC info'},
-  {first:'Joseph',last:'Helmuth',seg:'hr-block',phone:'515-639-8389',email:'zuljinzero@gmail.com',addr1:'2121 Rockford Road SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'10/7/1984',spouseRef:'Brittany Helmuth',notes:'D&D guy'},
-  {first:'Taran',last:'Bruner',seg:'hr-block',phone:'319-804-5474',email:'taran.white@yahoo.com',addr1:'3072 58th Street DR',city:'Vinton',state:'IA',zip:'52349',dob:'1/5/1995',spouseRef:'Jacob Bruner',notes:'Neighborhood finance authority, fun couple'},
-  {first:'Andrew',last:'Herrmann',seg:'hr-block',phone:'319-558-7130',email:'aherr1@outlook.com',addr1:'105 Hames Street',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'5/11/1970',spouseRef:'Annmarie Herrmann'},
-  {first:'Douglas',last:'Squires',seg:'hr-block',phone:'319-310-8199',email:'wilddfire0257@gmail.com',addr1:'312 11th Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'10/23/1965',spouseRef:'Melissa Squires'},
-  {first:'Destiny',last:'Swallom',seg:'hr-block',phone:'319-202-6918',email:'destinyswallom@gmail.com',addr1:'302 N Ave S',city:'Vinton',state:'IA',zip:'52349',dob:'12/31/1998',notes:'Dependents: Jeanne and Mason'},
-  {first:'Katie',last:'Cain',seg:'hr-block',phone:'319-784-7649',email:'cain.katie88@gmail.com',addr1:'18 8th Street S',city:'Central City',state:'IA',zip:'52214',dob:'7/4/1988',notes:'Sons Cameron & Julian. Bought house 2024'},
-  {first:'Tallon',last:'Hopp',seg:'hr-block',phone:'319-540-9762',email:'tallonhopp@gmail.com',addr1:'2621 5th Avenue Southeast',city:'Cedar Rapids',state:'IA',zip:'52403',dob:'5/13/2000',notes:'Bought house 2024'},
-  {first:'Zachary',last:'Kuhl',seg:'hr-block',phone:'319-789-0644',email:'sadykkuhl@gmail.com',addr1:'229 18th Street NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'10/26/1984',notes:'Daughter Millie'},
-  {first:'Emily',last:'Petty',seg:'hr-block',phone:'319-321-0419',email:'epetty@yahoo.com',addr1:'820 Magnolia Lane',city:'Marion',state:'IA',zip:'52302',dob:'6/28/1993'},
-  {first:'Timothy',last:'Carroll',seg:'hr-block',phone:'319-550-7193',email:'timcarroll67@yahoo.com',addr1:'698 Eastern Ave',city:'Marengo',state:'IA',zip:'52301',dob:'8/6/1985',spouseRef:'Courtney Carroll'},
-  {first:'Alysha',last:'Bruner',seg:'hr-block',phone:'319-280-6672',email:'alyshabruner1993@gmail.com',addr1:'124 Meadowlark Lane NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'10/26/1993',notes:'Daughters: Addysen & Asuna'},
-  {first:'Joshua',last:'Willits',seg:'hr-block',phone:'319-360-6499',addr1:'2142 Williams Blvd SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'1/26/1986'},
-  {first:'Troy',last:'Fligor',seg:'hr-block',phone:'319-202-1297',email:'masterskull13@gmail.com',addr1:'108 Water Street',city:'Center Point',state:'IA',zip:'52233',dob:'4/1/1998',notes:'Crazy hair, shy, likes Magic the Gathering'},
-  {first:'Silas',last:'Kellum',seg:'hr-block',phone:'319-324-1995',email:'certified2209@gmail.com',addr1:'4008 Westover Road SE',city:'Cedar Rapids',state:'IA',zip:'52403',dob:'2/17/1983',notes:'Nephews Keion and Vershaun'},
-  {first:'Montel',last:'Daniels',seg:'hr-block',phone:'319-450-5181',email:'dandude50@gmail.com',addr1:'1125 20th Street SW',city:'Cedar Rapids',state:'IA',zip:'52404',dob:'12/19/1998',spouseRef:'Kaitlyn Daniels'},
-  {first:'David',last:'Garner',seg:'hr-block',phone:'219-270-2865',email:'davidgted@hotmail.com',addr1:'4207 Vine Ave SE',city:'Cedar Rapids',state:'IA',zip:'52403',dob:'7/28/1959',notes:'2 adult children (1 basketball coach), 4 grandkids, loves Vegas'},
-  {first:'Susan',last:'Crouch',seg:'hr-block',phone:'319-396-9322',addr1:'271 Peace Ave NW',city:'Cedar Rapids',state:'IA',zip:'52405',dob:'10/19/1946',notes:'Worked at Rockwell (helicopter radios), sends holiday cards'},
-  {first:'Nicolas',last:'Swarner',seg:'hr-block',phone:'812-841-7915',email:'naswarner@gmail.com',addr1:'6202 Michael Drive NE',city:'Cedar Rapids',state:'IA',zip:'52411',dob:'12/13/1981',spouseRef:'Sandra Swarner'},
-  {first:'Nathan',last:'Severin',seg:'hr-block',phone:'319-377-3500',email:'huntersgolf@mchsi.com',addr1:'2795 Pebble Creek Drive',city:'Marion',state:'IA',zip:'52302',dob:'8/14/1978',spouseRef:'Joy Severin',notes:'Daughter Alexa'},
-  {first:'Michael',last:'Stolfus',seg:'hr-block',phone:'641-220-1484',email:'elmarstolfus@yahoo.com',addr1:'2813 Mary Drive',city:'Hiawatha',state:'IA',zip:'52233',dob:'10/17/1969',spouseRef:'Elmar Stolfus',notes:'Son Jaden, two parents as dependents'},
-  {first:'Dana',last:'Ellis',seg:'hr-block',phone:'319-538-3496',addr1:'628 20th Street NE',city:'Cedar Rapids',state:'IA',zip:'52402',dob:'1/17/1973',spouseRef:'Lonnie Baylark',notes:"Lonnie Baylark's partner."},
-];
-
-const SEED_LEADS=[
-  {contactName:'Jamie Lerch',stage:'interested',type:'seller',note:'Wants to sell house this year'},
-  {contactName:'Jessica Crabtree',stage:'interested',type:'seller',note:'Call back in August'},
-  {contactName:'Cecilia Mejia',stage:'aware',type:'buyer',note:'Interested in new construction'},
-  {contactName:'Luzieann Bernell',stage:'aware',type:'buyer',note:'Thinking of buying'},
-  {contactName:'Roy Dana',stage:'aware',type:'buyer',note:'Wants to buy summer 2026'},
-  {contactName:'Scott Venenga',stage:'aware',type:'buyer',note:'Wants to buy, likes fishing'},
-];
-
-function buildSeedContacts() {
-  const all = [];
-  PRIMARY.forEach((p, i) => {
-    const primary = { spouse: p.spouseRef||'', touchGoal: p.seg==='hr-block'?'90':'60', lastTouch: null, history: [], added: new Date().toISOString(), addr1:'', addr2:'', state:'', zip:'', ...p };
-    delete primary.spouseRef;
-    all.push(primary);
-    if (p.spouseRef) {
-      const parts = p.spouseRef.trim().split(' ');
-      const alreadyIn = PRIMARY.some(x=>(x.first+' '+x.last).trim().toLowerCase()===p.spouseRef.trim().toLowerCase());
-      if (!alreadyIn) {
-        all.push({ first:parts[0], last:parts.slice(1).join(' '), seg:p.seg, phone:p.phone||'', addr1:p.addr1||'', addr2:'', city:p.city||'', state:p.state||'', zip:p.zip||'', spouse:p.first+' '+p.last, touchGoal:p.seg==='hr-block'?'90':'60', lastTouch:null, history:[], added:new Date().toISOString(), isSpouse:true, notes:'Spouse of '+p.first+' '+p.last+(p.notes?'. '+p.notes:'') });
-      }
-    }
-  });
-  return all;
-}
-
-// ── LOAD DATA ─────────────────────────────────────────────
-async function load() {
-  try {
-    contacts = await fbGetAll('contacts');
-    leads = await fbGetAll('leads');
-    transactions = await fbGetAll('transactions');
-
-    // Seed if empty
-    if (contacts.length === 0) {
-      const seedContacts = buildSeedContacts();
-      for (const c of seedContacts) {
-        const id = await fbAdd('contacts', c);
-        contacts.push({id, ...c});
-      }
-    }
-    if (leads.length === 0) {
-      for (const l of SEED_LEADS) {
-        const id = await fbAdd('leads', l);
-        leads.push({id, ...l});
-      }
-    }
-  } catch(e) {
-    console.error('Load error:', e);
-    setSyncing('error');
+function tss(c){
+  if(c.followupDate){
+    const fu=new Date(c.followupDate+'T12:00:00'),tod=new Date();tod.setHours(0,0,0,0);
+    const du=Math.ceil((fu-tod)/86400000);
+    if(du<0)return{label:'follow-up overdue',cls:'tv-r',p:0};
+    if(du===0)return{label:'follow-up today!',cls:'tv-r',p:0};
+    if(du<=7)return{label:'follow-up in '+du+'d',cls:'tv-o',p:1};
   }
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  render();
+  if(!c.lastTouch)return{label:'never contacted',cls:'tv-r',p:0};
+  const d=dsi(c.lastTouch),g=parseInt(c.touchGoal||90);
+  if(d>g)return{label:d+'d ago — overdue',cls:'tv-r',p:0};
+  if(d>g*.8)return{label:d+'d ago — due soon',cls:'tv-o',p:1};
+  return{label:d+'d ago — on track',cls:'tv-g',p:2};
+}
+function fmt(n){return'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function cb(pr,co,re,sp,fe,st){
+  const tc=pr*(co/100),ref=tc*(re/100),ar=tc-ref,bk=ar*(sp/100),br=ar-bk,ft=bk*(fe/100),sx=bk*(st/100),tx=ft+sx;
+  return{tc,ref,ar,bk,br,ft,sx,tx,fp:bk-tx};
 }
 
-// ── HELPERS ───────────────────────────────────────────────
-function ini(c) { return ((c.first||'?')[0]+(c.last||'?')[0]).toUpperCase(); }
-function segL(s) { return {personal:'personal',family:'family',friend:'friend',neighbor:'neighbor',coworker:'work','hr-block':'HR Block','past-client':'past client',referral:'referral',other:'other'}[s]||'other'; }
-
-function dbu(dob) {
-  if (!dob || typeof dob !== 'string') return null;
-  try {
-    const parts = dob.trim().split('/');
-    if (parts.length < 2) return null;
-    const month = parseInt(parts[0],10)-1, day = parseInt(parts[1],10);
-    if (isNaN(month)||isNaN(day)) return null;
-    const now = new Date();
-    let next = new Date(now.getFullYear(), month, day);
-    if (next.setHours(0,0,0,0) < new Date().setHours(0,0,0,0)) next = new Date(now.getFullYear()+1, month, day);
-    return Math.ceil((next.getTime()-Date.now())/86400000);
-  } catch(e) { return null; }
-}
-function bdayStr(dob) {
-  if (!dob) return '';
-  const p = dob.split('/');
-  const mn = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return (mn[parseInt(p[0],10)-1]||'')+' '+parseInt(p[1],10);
-}
-function dsi(iso) { if(!iso) return null; return Math.floor((Date.now()-new Date(iso).getTime())/86400000); }
-function fuLine(c) {
-  if (!c.followupDate) return '';
-  const fu = new Date(c.followupDate + 'T12:00:00');
-  const today = new Date(); today.setHours(0,0,0,0);
-  const overdue = fu < today;
-  const color = overdue ? '#b83030' : '#1a5da0';
-  const dateStr = fu.toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
-  const reason = c.followupNote ? ' — ' + c.followupNote : '';
-  return '<div style="font-size:11px;font-weight:500;color:' + color + '">📅 follow up: ' + dateStr + reason + '</div>';
-}
-function tss(c) {
-  // Check specific follow-up date first
-  if(c.followupDate) {
-    const fu = new Date(c.followupDate+'T12:00:00');
-    const today = new Date(); today.setHours(0,0,0,0);
-    const daysUntil = Math.ceil((fu-today)/86400000);
-    if(daysUntil < 0) return {label:'follow-up overdue',cls:'tv-r',p:0};
-    if(daysUntil === 0) return {label:'follow-up due today!',cls:'tv-r',p:0};
-    if(daysUntil <= 7) return {label:'follow-up in '+daysUntil+'d',cls:'tv-o',p:1};
-  }
-  if(!c.lastTouch) return {label:'never contacted',cls:'tv-r',p:0};
-  const d=dsi(c.lastTouch), g=parseInt(c.touchGoal||90);
-  if(d>g) return {label:d+'d ago — overdue',cls:'tv-r',p:0};
-  if(d>g*.8) return {label:d+'d ago — due soon',cls:'tv-o',p:1};
-  return {label:d+'d ago — on track',cls:'tv-g',p:2};
-}
-function cardCls(c) { const p=tss(c).p; return 'card'+(p===0?' overdue':p===1?' due-soon':''); }
-function fmt(n) { return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-
-window.filtered = function() {
-  const q=(document.getElementById('search-input').value||'').toLowerCase();
-  const seg=document.getElementById('seg-filter').value;
+function filtered(){
+  const q=(document.getElementById('si').value||'').toLowerCase();
+  const seg=document.getElementById('sf').value;
   let list=contacts.slice();
-  if(q) list=list.filter(c=>(c.first+' '+c.last).toLowerCase().includes(q)||(c.phone||'').includes(q)||(c.email||'').toLowerCase().includes(q)||(c.city||'').toLowerCase().includes(q)||(c.notes||'').toLowerCase().includes(q)||(c.addr1||'').toLowerCase().includes(q));
-  if(seg) list=list.filter(c=>c.seg===seg);
-  if(currentTab==='needstouch') list=list.filter(c=>tss(c).p===0||!c.lastTouch);
-  if(currentTab==='overdue') list=list.filter(c=>tss(c).p===0);
-  if(currentTab==='pastdue') list=list.filter(c=>c.lastTouch&&tss(c).p===0);
-  if(currentTab==='never') list=list.filter(c=>!c.lastTouch);
-  if(currentTab==='soon') list=list.filter(c=>tss(c).p===1);
-  if(currentTab==='recent') list=[...list].sort((a,b)=>new Date(b.added)-new Date(a.added)).slice(0,20);
+  if(q)list=list.filter(c=>(c.first+' '+c.last).toLowerCase().includes(q)||(c.phone||'').includes(q)||(c.email||'').toLowerCase().includes(q)||(c.city||'').toLowerCase().includes(q)||(c.notes||'').toLowerCase().includes(q)||(c.addr1||'').toLowerCase().includes(q));
+  if(seg)list=list.filter(c=>c.seg===seg);
+  if(tab==='needs')list=list.filter(c=>tss(c).p===0||!c.lastTouch);
+  if(tab==='never')list=list.filter(c=>!c.lastTouch);
+  if(tab==='pastdue')list=list.filter(c=>c.lastTouch&&tss(c).p===0);
+  if(tab==='soon')list=list.filter(c=>tss(c).p===1);
+  if(tab==='recent')list=[...list].sort((a,b)=>new Date(b.added)-new Date(a.added)).slice(0,20);
   return list.sort((a,b)=>tss(a).p-tss(b).p);
 }
 
-// ── RENDER ────────────────────────────────────────────────
-function renderStats() {
-  const total=contacts.length, ov=contacts.filter(c=>tss(c).p===0).length, soon=contacts.filter(c=>tss(c).p===1).length;
-  const lc=leads.filter(l=>l.stage!=='closed').length, bc=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;}).length;
-  const pastDue=contacts.filter(c=>c.lastTouch&&tss(c).p===0).length;
-  const neverContacted=contacts.filter(c=>!c.lastTouch).length;
-  document.getElementById('stats-row').innerHTML=`
-    <div class="stat" onclick="window.setTab('all',document.getElementById('tab-all'))"><div class="stat-label">total contacts</div><div class="stat-value sv-g">${total}</div></div>
-    <div class="stat" onclick="window.setTab('never',document.getElementById('tab-needs'))"><div class="stat-label">never contacted</div><div class="stat-value sv-r">${neverContacted}</div></div>
-    <div class="stat" onclick="window.setTab('soon',document.getElementById('tab-needs'))"><div class="stat-label">due soon</div><div class="stat-value sv-o">${soon}</div></div>
-    <div class="stat" onclick="window.setTab('pastdue',document.getElementById('tab-needs'))"><div class="stat-label">past due</div><div class="stat-value sv-r">${pastDue}</div></div>
-    <div class="stat" onclick="window.setTab('bday',document.getElementById('tab-bday'))"><div class="stat-label">bdays (30d)</div><div class="stat-value sv-b">${bc}</div></div>
-    <div class="stat" onclick="window.setTab('leads',document.getElementById('tab-leads'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">${lc}</div></div>`;
-  const needsTouch=contacts.filter(c=>tss(c).p===0||!c.lastTouch).length;
-  document.getElementById('b-over').textContent=needsTouch;
+function renderStats(){
+  const total=contacts.length,ov=contacts.filter(c=>tss(c).p===0).length,soon=contacts.filter(c=>tss(c).p===1).length;
+  const lc=leads.filter(l=>l.stage!=='closed').length,bc=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;}).length;
+  const nv=contacts.filter(c=>!c.lastTouch).length,pd=contacts.filter(c=>c.lastTouch&&tss(c).p===0).length;
+  const nt=contacts.filter(c=>tss(c).p===0||!c.lastTouch).length;
+  let h='';
+  h+='<div class="stat" onclick="window.setTab(\'all\',document.getElementById(\'tab-all\'))"><div class="stat-label">total contacts</div><div class="stat-value sv-g">'+total+'</div></div>';
+  h+='<div class="stat" onclick="window.setTab(\'never\',document.getElementById(\'tab-needs\'))"><div class="stat-label">never contacted</div><div class="stat-value sv-r">'+nv+'</div></div>';
+  h+='<div class="stat" onclick="window.setTab(\'soon\',document.getElementById(\'tab-needs\'))"><div class="stat-label">due soon</div><div class="stat-value sv-o">'+soon+'</div></div>';
+  h+='<div class="stat" onclick="window.setTab(\'pastdue\',document.getElementById(\'tab-needs\'))"><div class="stat-label">past due</div><div class="stat-value sv-r">'+pd+'</div></div>';
+  h+='<div class="stat" onclick="window.setTab(\'bday\',document.getElementById(\'tab-bday\'))"><div class="stat-label">bdays (30d)</div><div class="stat-value sv-b">'+bc+'</div></div>';
+  h+='<div class="stat" onclick="window.setTab(\'leads\',document.getElementById(\'tab-leads\'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">'+lc+'</div></div>';
+  document.getElementById('stats-row').innerHTML=h;
+  document.getElementById('b-needs').textContent=nt;
   document.getElementById('b-leads').textContent=lc;
   document.getElementById('b-bday').textContent=bc;
 }
 
-window.renderContacts = function() {
-  const list=window.filtered(), grid=document.getElementById('contact-grid');
+function renderContacts(){
+  const list=filtered(),grid=document.getElementById('cg');
   if(!list.length){grid.innerHTML='<div class="empty"><p>no contacts match</p></div>';return;}
-  let out = '';
-  list.forEach(c => {
-    const ts=tss(c), d=dbu(c.dob), isBd=d!==null&&d<=14;
+  let out='';
+  list.forEach(c=>{
+    const ts=tss(c),d=dbu(c.dob),ibd=d!==null&&d<=14;
     const note=c.notes?'<div class="cnote">'+c.notes.substring(0,100)+(c.notes.length>100?'…':'')+'</div>':'';
     const ll=c.history&&c.history.length?'<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:2px">'+c.history[c.history.length-1].method+': '+(c.history[c.history.length-1].note||'').substring(0,45)+'</div>':'';
     const addr=[c.addr1,c.city,c.state,c.zip].filter(Boolean).join(', ');
-    const fu=fuLine(c);
     let chips='<div class="chips"><span class="cseg seg-'+(c.seg||'other')+'">'+segL(c.seg)+'</span>';
-    if(c.spouse) chips+='<span class="spouse-chip">+ '+c.spouse+'</span>';
-    if(isBd) chips+='<span class="bday-chip">🎂 '+(d===0?'today!':d===1?'tomorrow':d+'d')+'</span>';
-    if(c.isSpouse) chips+='<span style="font-size:10px;background:#f0f8ff;color:#1a5da0;border-radius:20px;padding:2px 8px;">spouse</span>';
+    if(c.spouse)chips+='<span class="sp-chip">+ '+c.spouse+'</span>';
+    if(ibd)chips+='<span class="bd-chip">🎂 '+(d===0?'today!':d===1?'tomorrow':d+'d')+'</span>';
+    if(c.isSpouse)chips+='<span style="font-size:10px;background:#f0f8ff;color:#1a5da0;border-radius:20px;padding:2px 8px">spouse</span>';
     chips+='</div>';
-    let card='<div class="'+(ts.p===0?'card overdue':ts.p===1?'card due-soon':'card')+'">';
-    card+='<div class="ctop"><div class="av'+(isBd?' bday':'')+'">'+ini(c)+'</div>';
+    const cls=ts.p===0?'card ov':ts.p===1?'card ds':'card';
+    let card='<div class="'+cls+'">';
+    card+='<div class="ctop"><div class="av'+(ibd?' bd':'')+'">'+ini(c)+'</div>';
     card+='<div class="cinfo"><div class="cname">'+c.first+' '+c.last+'</div>'+chips+'</div></div>';
     card+='<div class="cdetails">';
-    if(c.phone) card+='<div>📞 '+c.phone+'</div>';
-    if(c.email) card+='<div>✉ '+c.email+'</div>';
-    if(addr) card+='<div>📍 '+addr+'</div>';
-    card+=ll+fu+'</div>';
+    if(c.phone)card+='<div>📞 '+c.phone+'</div>';
+    if(c.email)card+='<div>✉ '+c.email+'</div>';
+    if(addr)card+='<div>📍 '+addr+'</div>';
+    card+=ll+fl(c)+'</div>';
     card+='<div class="ctouch"><span class="tl">last touch</span><span class="tv '+ts.cls+'">'+ts.label+'</span></div>';
     card+='<div class="cbtns">';
-    card+='<button class="cbtn" onclick="window.openEdit(''+c.id+'')">edit</button>';
-    card+='<button class="cbtn touch" onclick="window.openTouch(''+c.id+'')">log touch</button>';
-    card+='<button class="cbtn" onclick="window.openHist(''+c.id+'')">history</button>';
-    card+='<button class="cbtn del" onclick="window.delC(''+c.id+'')">delete</button>';
+    card+='<button class="cbtn" onclick="window.openEdit(\''+c.id+'\')">edit</button>';
+    card+='<button class="cbtn tc" onclick="window.openTouch(\''+c.id+'\')">log touch</button>';
+    card+='<button class="cbtn" onclick="window.openHist(\''+c.id+'\')">history</button>';
+    card+='<button class="cbtn dl" onclick="window.delC(\''+c.id+'\')">delete</button>';
     card+='</div>'+note+'</div>';
     out+=card;
   });
   grid.innerHTML=out;
 }
 
+function renderPipeline(){
+  const stages=['aware','interested','active','closed'],labels={aware:'Aware',interested:'Interested',active:'Active',closed:'Closed ✓'};
+  let out='';
+  stages.forEach(s=>{
+    const sl=leads.filter(l=>l.stage===s);
+    out+='<div class="pcol"><div class="pcol-hd">'+labels[s]+'<span class="pct">'+sl.length+'</span></div>';
+    sl.forEach(l=>{
+      out+='<div class="plead"><div class="plead-name">'+l.contactName+'</div>';
+      out+='<div class="plead-meta">'+l.type+' · '+(l.note||'')+'</div><div class="plead-btns">';
+      out+='<select class="pbtn" onchange="window.pStage(\''+l.id+'\',this.value)" style="cursor:pointer;flex:1">';
+      out+='<option value="aware"'+(l.stage==='aware'?' selected':'')+'>aware</option>';
+      out+='<option value="interested"'+(l.stage==='interested'?' selected':'')+'>interested</option>';
+      out+='<option value="active"'+(l.stage==='active'?' selected':'')+'>active</option>';
+      out+='<option value="closed"'+(l.stage==='closed'?' selected':'')+'>closed</option>';
+      out+='</select><button class="pbtn" onclick="window.pDel(\''+l.id+'\')">remove</button></div></div>';
+    });
+    out+='<button class="add-lr" onclick="window.openAddLead(\''+s+'\')">+ add</button></div>';
+  });
+  document.getElementById('pl').innerHTML=out;
+}
+
+function renderBdays(){
+  const u60=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=60;}).sort((a,b)=>dbu(a.dob)-dbu(b.dob));
+  const u30=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;});
+  const mk=c=>{const d=dbu(c.dob),lbl=d===0?'TODAY!':d===1?'tomorrow':d+' days';return'<div class="bcard" onclick="window.openHist(\''+c.id+'\')"><div class="bav">'+ini(c)+'</div><div><div class="bname">'+c.first+' '+c.last+'</div><div class="bdate">'+bds(c.dob)+'</div><div class="blbl">'+lbl+'</div></div></div>';};
+  document.getElementById('b60').innerHTML=u60.length?u60.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None in the next 60 days</p>';
+  document.getElementById('bmo').innerHTML=u30.length?u30.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None this month</p>';
+}
+
+function renderTrans(){
+  const ts=transactions.reduce((s,t)=>s+t.price,0);
+  const tp=transactions.reduce((s,t)=>s+cb(t.price,t.co,t.re,t.sp,t.fe,t.st).fp,0);
+  const tt=transactions.reduce((s,t)=>s+cb(t.price,t.co,t.re,t.sp,t.fe,t.st).tx,0);
+  document.getElementById('tsumm').innerHTML=
+    '<div class="stat" style="min-width:120px"><div class="stat-label">transactions</div><div class="stat-value sv-g">'+transactions.length+'</div></div>'+
+    '<div class="stat" style="min-width:160px"><div class="stat-label">total sales</div><div class="stat-value sv-b" style="font-size:18px">'+fmt(ts)+'</div></div>'+
+    '<div class="stat" style="min-width:160px"><div class="stat-label">total payout</div><div class="stat-value sv-g" style="font-size:18px">'+fmt(tp)+'</div></div>'+
+    '<div class="stat" style="min-width:140px"><div class="stat-label">taxes aside</div><div class="stat-value sv-r" style="font-size:18px">'+fmt(tt)+'</div></div>';
+  const el=document.getElementById('ttbl');
+  if(!transactions.length){el.innerHTML='<div class="empty"><p>no transactions yet</p><p style="font-size:13px;margin-top:6px">click "+ add transaction" to record your first sale</p></div>';return;}
+  const sorted=[...transactions].sort((a,b)=>new Date(b.date||b.added)-new Date(a.date||a.added));
+  el.innerHTML=sorted.map(t=>{
+    const b=cb(t.price,t.co,t.re,t.sp,t.fe,t.st);
+    const brok=100-t.sp;
+    const ds=t.date?new Date(t.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+    let rows=[['sale price',fmt(t.price),''],['total commission',fmt(b.tc)+' ('+t.co+'%)','']];
+    if(t.re>0)rows.push(['referral fee',fmt(b.ref)+' ('+t.re+'%)','#b83030']);
+    rows.push(['broker cut',fmt(b.br)+' ('+brok+'%)','#b83030'],['Becky keeps',fmt(b.bk)+' ('+t.sp+'%)','var(--em)'],['federal tax',fmt(b.ft)+' ('+t.fe+'%)','#b83030'],['state tax',fmt(b.sx)+' ('+t.st+'%)','#b83030'],['total taxes',fmt(b.tx),'#b83030']);
+    const grid=rows.map(([lbl,val,col])=>'<div style="background:#f9fafb;border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px">'+lbl+'</div><div style="font-size:13px;font-weight:600;color:'+(col||'#1a1a1a')+'">'+val+'</div></div>').join('');
+    return'<div style="background:white;border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:12px">'+
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">'+
+      '<div><div style="font-size:16px;font-weight:600">'+t.cl+'</div><div style="font-size:12px;color:var(--muted);margin-top:3px">'+ds+' · '+(t.ag||'—')+'</div>'+(t.no?'<div style="font-size:12px;color:var(--muted);font-style:italic;margin-top:3px">'+t.no+'</div>':'')+'</div>'+
+      '<div style="text-align:right"><div style="font-size:22px;font-weight:700;color:var(--em-d)">'+fmt(b.fp)+'</div><div style="font-size:11px;color:var(--muted)">final payout</div></div></div>'+
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;padding-top:12px;border-top:1px solid #f0f0f0;margin-bottom:12px">'+grid+'</div>'+
+      '<div style="display:flex;gap:8px"><button class="cbtn" onclick="window.openEditTrans(\''+t.id+'\')">edit</button><button class="cbtn dl" onclick="window.delTrans(\''+t.id+'\')">delete</button></div></div>';
+  }).join('');
+}
+
+function render(){renderStats();if(tab==='leads')renderPipeline();else if(tab==='bday')renderBdays();else if(tab==='trans')renderTrans();else renderContacts();}
+
+window.setTab=function(t,el){
+  tab=t;
+  document.querySelectorAll('.ntab').forEach(n=>n.classList.remove('active'));
+  const sub=['needs','never','pastdue','soon'];
+  if(sub.includes(t))document.getElementById('tab-needs').classList.add('active');
+  else if(el)el.classList.add('active');
+  document.getElementById('vc').style.display=(t==='leads'||t==='bday'||t==='trans')?'none':'block';
+  document.getElementById('vl').style.display=t==='leads'?'block':'none';
+  document.getElementById('vb').style.display=t==='bday'?'block':'none';
+  document.getElementById('vt').style.display=t==='trans'?'block':'none';
+  if(t==='leads')renderPipeline();else if(t==='bday')renderBdays();else if(t==='trans')renderTrans();else renderContacts();
+};
+
+window.cm=function(id){document.getElementById(id).classList.remove('open')};
+
+window.openAdd=function(){
+  document.getElementById('mc-ttl').textContent='add contact';
+  document.getElementById('e-id').value='';
+  ['first','last','phone','email','a1','a2','city','state','zip','spouse','notes','dob','fd','fn'].forEach(f=>{const el=document.getElementById('e-'+f);if(el)el.value='';});
+  document.getElementById('e-seg').value='personal';document.getElementById('e-tg').value='90';
+  document.getElementById('mc').classList.add('open');
+};
+
+window.openEdit=function(id){
+  const c=contacts.find(x=>x.id===id);if(!c)return;
+  document.getElementById('mc-ttl').textContent='edit contact';
+  document.getElementById('e-id').value=id;
+  document.getElementById('e-first').value=c.first||'';document.getElementById('e-last').value=c.last||'';
+  document.getElementById('e-phone').value=c.phone||'';document.getElementById('e-email').value=c.email||'';
+  document.getElementById('e-a1').value=c.addr1||'';document.getElementById('e-a2').value=c.addr2||'';
+  document.getElementById('e-city').value=c.city||'';document.getElementById('e-state').value=c.state||'';
+  document.getElementById('e-zip').value=c.zip||'';document.getElementById('e-spouse').value=c.spouse||'';
+  document.getElementById('e-dob').value=c.dob||'';document.getElementById('e-seg').value=c.seg||'other';
+  document.getElementById('e-tg').value=c.touchGoal||'90';document.getElementById('e-notes').value=c.notes||'';
+  document.getElementById('e-fd').value=c.followupDate||'';document.getElementById('e-fn').value=c.followupNote||'';
+  document.getElementById('mc').classList.add('open');
+};
+
+window.saveContact=async function(){
+  const first=document.getElementById('e-first').value.trim();if(!first){alert('First name required');return;}
+  const eid=document.getElementById('e-id').value;
+  const d={first,last:document.getElementById('e-last').value.trim(),seg:document.getElementById('e-seg').value,
+    phone:document.getElementById('e-phone').value.trim(),email:document.getElementById('e-email').value.trim(),
+    addr1:document.getElementById('e-a1').value.trim(),addr2:document.getElementById('e-a2').value.trim(),
+    city:document.getElementById('e-city').value.trim(),state:document.getElementById('e-state').value.trim().toUpperCase(),
+    zip:document.getElementById('e-zip').value.trim(),spouse:document.getElementById('e-spouse').value.trim(),
+    dob:document.getElementById('e-dob').value.trim(),touchGoal:document.getElementById('e-tg').value,
+    followupDate:document.getElementById('e-fd').value,followupNote:document.getElementById('e-fn').value.trim(),
+    notes:document.getElementById('e-notes').value.trim()};
+  if(eid){await fup('contacts',eid,d);const i=contacts.findIndex(c=>c.id===eid);if(i>=0)contacts[i]={...contacts[i],...d};}
+  else{const nid=await fad('contacts',{...d,lastTouch:null,history:[],added:new Date().toISOString()});contacts.push({id:nid,...d,lastTouch:null,history:[],added:new Date().toISOString()});}
+  window.cm('mc');render();
+};
+
+window.delC=async function(id){
+  if(!confirm('Remove this contact?'))return;
+  await fdl('contacts',id);contacts=contacts.filter(c=>c.id!==id);render();
+};
+
+window.openTouch=function(id){
+  tid=id;const c=contacts.find(x=>x.id===id);
+  document.getElementById('tname').textContent=c.first+' '+c.last;
+  document.getElementById('t-method').value='text';document.getElementById('t-note').value='';
+  document.getElementById('mt').classList.add('open');
+};
+
+window.saveTouch=async function(){
+  if(!tid)return;const i=contacts.findIndex(c=>c.id===tid);if(i<0)return;
+  const e={date:new Date().toISOString(),method:document.getElementById('t-method').value,note:document.getElementById('t-note').value.trim()};
+  const history=[...(contacts[i].history||[]),e];
+  await fup('contacts',tid,{lastTouch:e.date,history,followupDate:'',followupNote:''});
+  contacts[i].lastTouch=e.date;contacts[i].history=history;contacts[i].followupDate='';contacts[i].followupNote='';
+  window.cm('mt');render();
+};
+
+window.openHist=function(id){
+  hid=id;const c=contacts.find(x=>x.id===id);if(!c)return;
+  document.getElementById('h-ttl').textContent=c.first+' '+c.last+' — contact history';
+  const h=c.history||[];
+  document.getElementById('h-body').innerHTML=h.length?[...h].reverse().map(e=>'<div class="hentry"><div class="hmeta"><span class="hdate">'+new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'</span><span class="hmethod">'+e.method+'</span></div>'+(e.note?'<div class="hnote">'+e.note+'</div>':'')+'</div>').join(''):'<p style="font-size:13px;color:var(--muted);padding:8px 0">No touches logged yet.</p>';
+  document.getElementById('mh').classList.add('open');
+};
+
+window.openAddLead=function(stage){
+  stage=stage||'aware';
+  document.getElementById('lc').innerHTML=contacts.map(c=>'<option value="'+c.first+' '+c.last+'">'+c.first+' '+c.last+'</option>').join('');
+  document.getElementById('ls-sel').value=stage;document.getElementById('lt').value='buyer';document.getElementById('ln').value='';
+  document.getElementById('ml').classList.add('open');
+};
+
+window.saveLead=async function(){
+  const d={contactName:document.getElementById('lc').value,stage:document.getElementById('ls-sel').value,type:document.getElementById('lt').value,note:document.getElementById('ln').value.trim()};
+  const nid=await fad('leads',d);leads.push({id:nid,...d});
+  window.cm('ml');renderStats();if(tab==='leads')renderPipeline();
+};
+
+window.pStage=async function(id,stage){
+  const l=leads.find(x=>x.id===id);if(!l)return;
+  l.stage=stage;await fup('leads',id,{stage});renderStats();renderPipeline();
+};
+
+window.pDel=async function(id){
+  await fdl('leads',id);leads=leads.filter(l=>l.id!==id);renderStats();renderPipeline();
+};
+
+window.calcT=function(){
+  const pr=parseFloat(document.getElementById('tt-pr').value)||0;
+  if(!pr){document.getElementById('tp').style.display='none';return;}
+  const co=parseFloat(document.getElementById('tt-co').value)||3.5,re=parseFloat(document.getElementById('tt-re').value)||0;
+  const sp=parseFloat(document.getElementById('tt-sp').value)||70,fe=parseFloat(document.getElementById('tt-fe').value)||20,st=parseFloat(document.getElementById('tt-st').value)||10;
+  const b=cb(pr,co,re,sp,fe,st),brok=100-sp;
+  const rows=[['sale price',fmt(pr),''],['total commission ('+co+'%)',fmt(b.tc),'']];
+  if(re>0)rows.push(['referral fee ('+re+'%)','− '+fmt(b.ref),'color:#b83030']);
+  rows.push(['broker ('+brok+'%)','− '+fmt(b.br),'color:#b83030'],['Becky keeps ('+sp+'%)',fmt(b.bk),'color:var(--em);font-weight:600'],['federal tax ('+fe+'%)','− '+fmt(b.ft),'color:#b83030'],['state tax ('+st+'%)','− '+fmt(b.sx),'color:#b83030'],['final payout',fmt(b.fp),'color:var(--em-d);font-weight:700;font-size:15px;border-top:1px solid #ccc;padding-top:6px']);
+  document.getElementById('tpr').innerHTML=rows.map(([l,v,s])=>'<div style="display:flex;justify-content:space-between;padding:3px 0;'+s+'"><span style="color:var(--muted)">'+l+'</span><span style="'+s+'">'+v+'</span></div>').join('');
+  document.getElementById('tp').style.display='block';
+};
+
+window.openAddTrans=function(){
+  document.getElementById('mtr-ttl').textContent='add transaction';document.getElementById('tt-id').value='';
+  document.getElementById('tt-cl').value='';document.getElementById('tt-dt').value=new Date().toISOString().slice(0,10);
+  document.getElementById('tt-ag').value='Becky Oxford';document.getElementById('tt-pr').value='';
+  document.getElementById('tt-co').value='3.5';document.getElementById('tt-re').value='0';
+  document.getElementById('tt-sp').value='70';document.getElementById('tt-fe').value='20';
+  document.getElementById('tt-st').value='10';document.getElementById('tt-no').value='';
+  document.getElementById('tp').style.display='none';document.getElementById('mtr').classList.add('open');
+};
+
+window.openEditTrans=function(id){
+  const t=transactions.find(x=>x.id===id);if(!t)return;
+  document.getElementById('mtr-ttl').textContent='edit transaction';document.getElementById('tt-id').value=id;
+  document.getElementById('tt-cl').value=t.cl||'';document.getElementById('tt-dt').value=t.date||'';
+  document.getElementById('tt-ag').value=t.ag||'';document.getElementById('tt-pr').value=t.price||'';
+  document.getElementById('tt-co').value=t.co||3.5;document.getElementById('tt-re').value=t.re||0;
+  document.getElementById('tt-sp').value=t.sp||70;document.getElementById('tt-fe').value=t.fe||20;
+  document.getElementById('tt-st').value=t.st||10;document.getElementById('tt-no').value=t.no||'';
+  window.calcT();document.getElementById('mtr').classList.add('open');
+};
+
+window.saveTrans=async function(){
+  const cl=document.getElementById('tt-cl').value.trim(),price=parseFloat(document.getElementById('tt-pr').value);
+  if(!cl||!price){alert('Client name and sale price are required.');return;}
+  const tid2=document.getElementById('tt-id').value;
+  const d={cl,date:document.getElementById('tt-dt').value,ag:document.getElementById('tt-ag').value.trim(),price,
+    co:parseFloat(document.getElementById('tt-co').value)||3.5,re:parseFloat(document.getElementById('tt-re').value)||0,
+    sp:parseFloat(document.getElementById('tt-sp').value)||70,fe:parseFloat(document.getElementById('tt-fe').value)||20,
+    st:parseFloat(document.getElementById('tt-st').value)||10,no:document.getElementById('tt-no').value.trim()};
+  if(tid2){await fup('transactions',tid2,d);const i=transactions.findIndex(x=>x.id===tid2);if(i>=0)transactions[i]={...transactions[i],...d};}
+  else{const nid=await fad('transactions',{...d,added:new Date().toISOString()});transactions.push({id:nid,...d,added:new Date().toISOString()});}
+  window.cm('mtr');renderTrans();
+};
+
+window.delTrans=async function(id){
+  if(!confirm('Remove this transaction?'))return;
+  await fdl('transactions',id);transactions=transactions.filter(t=>t.id!==id);renderTrans();
+};
+
+window.exportCSV=function(){
+  if(!contacts.length){alert('No contacts.');return;}
+  const h=['First','Last','Segment','Phone','Email','Address 1','Address 2','City','State','Zip','Spouse','DOB','Touch Goal','Follow-up Date','Follow-up Note','Last Touch','Notes'];
+  const rows=contacts.map(c=>[c.first,c.last,segL(c.seg),c.phone||'',c.email||'',c.addr1||'',c.addr2||'',c.city||'',c.state||'',c.zip||'',c.spouse||'',c.dob||'',c.touchGoal||'',c.followupDate||'',c.followupNote||'',c.lastTouch?new Date(c.lastTouch).toLocaleDateString():'',c.notes||''].map(v=>'"'+String(v).replace(/"/g,'""')+'"'));
+  const csv=[h.join(','),...rows.map(r=>r.join(','))].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='becky-sphere-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
+};
+
+['mc','mt','mh','ml','mtr'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});});
+document.getElementById('si').addEventListener('input',()=>renderContacts());
+document.getElementById('sf').addEventListener('change',()=>renderContacts());
+
+load();
+</script>
+</body>
+</html>
