@@ -146,7 +146,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <div class="stats-row" id="stats-row"></div>
   <div class="nav-tabs">
     <button class="ntab active" id="tab-all" onclick="setTab('all',this)">all contacts</button>
-    <button class="ntab" id="tab-needs" onclick="setTab('overdue',this)">needs touch <span class="badge br" id="b-over">0</span></button>
+    <button class="ntab" id="tab-needs" onclick="setTab('needstouch',this)">needs touch <span class="badge br" id="b-over">0</span></button>
     <button class="ntab" id="tab-leads" onclick="setTab('leads',this)">hot leads <span class="badge bp" id="b-leads">0</span></button>
     <button class="ntab" id="tab-bday" onclick="setTab('bday',this)">birthdays <span class="badge bb" id="b-bday">0</span></button>
     <button class="ntab" id="tab-recent" onclick="setTab('recent',this)">recently added</button>
@@ -598,6 +598,7 @@ window.filtered = function() {
   let list=contacts.slice();
   if(q) list=list.filter(c=>(c.first+' '+c.last).toLowerCase().includes(q)||(c.phone||'').includes(q)||(c.email||'').toLowerCase().includes(q)||(c.city||'').toLowerCase().includes(q)||(c.notes||'').toLowerCase().includes(q)||(c.addr1||'').toLowerCase().includes(q));
   if(seg) list=list.filter(c=>c.seg===seg);
+  if(currentTab==='needstouch') list=list.filter(c=>tss(c).p===0||!c.lastTouch);
   if(currentTab==='overdue') list=list.filter(c=>tss(c).p===0);
   if(currentTab==='pastdue') list=list.filter(c=>c.lastTouch&&tss(c).p===0);
   if(currentTab==='never') list=list.filter(c=>!c.lastTouch);
@@ -619,7 +620,8 @@ function renderStats() {
     <div class="stat" onclick="setTab('pastdue',document.getElementById('tab-needs'))"><div class="stat-label">past due</div><div class="stat-value sv-r">${pastDue}</div></div>
     <div class="stat" onclick="setTab('bday',document.getElementById('tab-bday'))"><div class="stat-label">bdays (30d)</div><div class="stat-value sv-b">${bc}</div></div>
     <div class="stat" onclick="setTab('leads',document.getElementById('tab-leads'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">${lc}</div></div>`;
-  document.getElementById('b-over').textContent=ov;
+  const needsTouch=contacts.filter(c=>tss(c).p===0||!c.lastTouch).length;
+  document.getElementById('b-over').textContent=needsTouch;
   document.getElementById('b-leads').textContent=lc;
   document.getElementById('b-bday').textContent=bc;
 }
@@ -684,7 +686,7 @@ function renderPipeline() {
 function renderBdays() {
   const u60=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=60;}).sort((a,b)=>dbu(a.dob)-dbu(b.dob));
   const u30=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;});
-  const mk=c=>{const d=dbu(c.dob),lbl=d===0?'TODAY!':d===1?'tomorrow':d+' days';return `<div class="bcard"><div class="bav">${ini(c)}</div><div><div class="bname">${c.first} ${c.last}</div><div class="bdate">${bdayStr(c.dob)}</div><div class="bdays-lbl">${lbl}</div></div></div>`;};
+  const mk=c=>{const d=dbu(c.dob),lbl=d===0?'TODAY!':d===1?'tomorrow':d+' days';return `<div class="bcard" onclick="window.openHist('${c.id}')" style="cursor:pointer" title="View ${c.first}'s history"><div class="bav">${ini(c)}</div><div><div class="bname">${c.first} ${c.last}</div><div class="bdate">${bdayStr(c.dob)}</div><div class="bdays-lbl">${lbl}</div><div style="font-size:10px;color:#8a5010;margin-top:2px">tap to edit</div></div></div>`;};
   document.getElementById('bday-60').innerHTML=u60.length?u60.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None in the next 60 days</p>';
   document.getElementById('bday-month').innerHTML=u30.length?u30.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None this month</p>';
 }
@@ -743,11 +745,27 @@ function render() { renderStats(); if(currentTab==='leads') renderPipeline(); el
 // ── TAB ───────────────────────────────────────────────────
 window.setTab = function(tab, el) {
   currentTab=tab;
-  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active')); if(el) el.classList.add('active');
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  // For stat card sub-filters, highlight the needs touch tab
+  const contactSubTabs = ['overdue','pastdue','never','soon'];
+  if(contactSubTabs.includes(tab)) {
+    document.getElementById('tab-needs').classList.add('active');
+  } else if(el) {
+    el.classList.add('active');
+  }
   document.getElementById('view-contacts').style.display=(tab==='leads'||tab==='bday'||tab==='transactions')?'none':'block';
   document.getElementById('view-leads').style.display=tab==='leads'?'block':'none';
   document.getElementById('view-bday').style.display=tab==='bday'?'block':'none';
   document.getElementById('view-trans').style.display=tab==='transactions'?'block':'none';
+  // Show filter banner for sub-filters
+  const filterLabels = {overdue:'Showing: all contacts needing touch', pastdue:'Showing: past due contacts', never:'Showing: never contacted', soon:'Showing: due soon'};
+  const banner = document.getElementById('filter-banner');
+  if(filterLabels[tab]) {
+    document.getElementById('filter-label').textContent = filterLabels[tab];
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
   if(tab==='leads') renderPipeline(); else if(tab==='bday') renderBdays(); else if(tab==='transactions') renderTransactions(); else window.renderContacts();
 };
 
@@ -793,8 +811,13 @@ window.saveTouch = async function() {
   const i=contacts.findIndex(c=>c.id===touchingId); if(i<0) return;
   const e={date:new Date().toISOString(),method:document.getElementById('t-method').value,note:document.getElementById('t-note').value.trim()};
   const history=[...(contacts[i].history||[]),e];
-  await fbUpdate('contacts',touchingId,{lastTouch:e.date,history});
+  const touchUpdate = {lastTouch:e.date, history};
+  // Clear follow-up date when touch is logged
+  touchUpdate.followupDate = '';
+  touchUpdate.followupNote = '';
+  await fbUpdate('contacts',touchingId,touchUpdate);
   contacts[i].lastTouch=e.date; contacts[i].history=history;
+  contacts[i].followupDate=''; contacts[i].followupNote='';
   cm('m-touch'); render();
 };
 
