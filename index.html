@@ -509,7 +509,8 @@ function renderBdays(){
     else if(ds!==null&&ds>0&&ds<=7)lbl=ds+' days ago';
     const done=bdayTouched(c);
     const addr=[c.addr1,c.addr2,c.city,c.state,c.zip].filter(Boolean).join(', ');
-    let s='<div class="bcard" onclick="window.openBday(''+c.id+'')" style="cursor:pointer'+(done?';opacity:0.6':'')+'">';
+    const dim=done?' style="opacity:0.6"':'';
+    let s='<div class="bcard" data-bid="'+c.id+'"'+dim+'>';
     s+='<div class="bav">'+ini(c)+'</div>';
     s+='<div><div class="bname">'+c.first+' '+c.last+'</div>';
     s+='<div class="bdate">'+bds(c.dob)+'</div>';
@@ -521,6 +522,10 @@ function renderBdays(){
   };
   document.getElementById('b60').innerHTML=u60.length?u60.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None in the next 30 days</p>';
   document.getElementById('bmo').innerHTML=u30.length?u30.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None this month</p>';
+  ['b60','bmo'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.onclick=function(e){var card=e.target.closest('[data-bid]');if(card)window.openBday(card.dataset.bid);};
+  });
 }
 
 function renderTrans(){
@@ -786,3 +791,4 @@ load();
 </div></div>
 </body>
 </html>
+
