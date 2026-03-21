@@ -725,6 +725,8 @@ window.openBday = function(id) {
   document.getElementById('bday-cname').textContent = c.first + ' ' + c.last;
   document.getElementById('bday-cdate').textContent = bds(c.dob) + ' — ' + lbl;
   document.getElementById('bday-cphone').textContent = c.phone ? '📞 ' + c.phone : '';
+  const addr = [c.addr1, c.addr2, c.city, c.state, c.zip].filter(Boolean).join(', ');
+  document.getElementById('bday-caddr').textContent = addr ? '📍 ' + addr : '';
   document.getElementById('bd-method').value = 'text';
   document.getElementById('bd-note').value = '';
   document.getElementById('mbday').classList.add('open');
@@ -756,6 +758,7 @@ load();
     <div id="bday-cname" style="font-size:16px;font-weight:600;margin-bottom:4px"></div>
     <div id="bday-cdate" style="font-size:13px;color:#8a5010;margin-bottom:4px"></div>
     <div id="bday-cphone" style="font-size:13px;color:var(--muted)"></div>
+    <div id="bday-caddr" style="font-size:13px;color:var(--muted);margin-top:2px"></div>
   </div>
   <div class="fr"><label class="fl">how did Becky reach out?</label>
     <select class="fi" id="bd-method">
