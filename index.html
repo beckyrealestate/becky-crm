@@ -472,7 +472,7 @@ function renderPipeline(){
 function renderBdays(){
   const u60=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=60;}).sort((a,b)=>dbu(a.dob)-dbu(b.dob));
   const u30=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;});
-  const mk=c=>{const d=dbu(c.dob),lbl=d===0?'TODAY!':d===1?'tomorrow':d+' days';return'<div class="bcard" onclick="window.openHist(\''+c.id+'\')"><div class="bav">'+ini(c)+'</div><div><div class="bname">'+c.first+' '+c.last+'</div><div class="bdate">'+bds(c.dob)+'</div><div class="blbl">'+lbl+'</div></div></div>';};
+  const mk=c=>{const d=dbu(c.dob),lbl=d===0?'TODAY!':d===1?'tomorrow':d+' days';return'<div class="bcard" onclick="window.openBday(\''+c.id+'\')"><div class="bav">'+ini(c)+'</div><div><div class="bname">'+c.first+' '+c.last+'</div><div class="bdate">'+bds(c.dob)+'</div><div class="blbl">'+lbl+'</div></div></div>';};
   document.getElementById('b60').innerHTML=u60.length?u60.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None in the next 60 days</p>';
   document.getElementById('bmo').innerHTML=u30.length?u30.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None this month</p>';
 }
@@ -674,11 +674,66 @@ window.exportCSV=function(){
   const a=document.createElement('a');a.href=url;a.download='becky-sphere-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
 };
 
-['mc','mt','mh','ml','mtr'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});});
+['mc','mt','mh','ml','mtr','mbday'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});});
 document.getElementById('si').addEventListener('input',()=>renderContacts());
 document.getElementById('sf').addEventListener('change',()=>renderContacts());
 
+
+let bdayId = null;
+window.openBday = function(id) {
+  bdayId = id;
+  const c = contacts.find(x => x.id === id); if(!c) return;
+  const d = dbu(c.dob);
+  const lbl = d === 0 ? 'Today!' : d === 1 ? 'Tomorrow' : 'In ' + d + ' days';
+  document.getElementById('bday-cname').textContent = c.first + ' ' + c.last;
+  document.getElementById('bday-cdate').textContent = bds(c.dob) + ' — ' + lbl;
+  document.getElementById('bday-cphone').textContent = c.phone ? '📞 ' + c.phone : '';
+  document.getElementById('bd-method').value = 'text';
+  document.getElementById('bd-note').value = '';
+  document.getElementById('mbday').classList.add('open');
+};
+
+window.saveBdayTouch = async function() {
+  if(!bdayId) return;
+  const i = contacts.findIndex(c => c.id === bdayId); if(i < 0) return;
+  const e = {
+    date: new Date().toISOString(),
+    method: document.getElementById('bd-method').value,
+    note: '🎂 Birthday touch' + (document.getElementById('bd-note').value.trim() ? ': ' + document.getElementById('bd-note').value.trim() : '')
+  };
+  const history = [...(contacts[i].history || []), e];
+  await fup('contacts', bdayId, {lastTouch: e.date, history});
+  contacts[i].lastTouch = e.date;
+  contacts[i].history = history;
+  window.cm('mbday');
+  render();
+};
+
 load();
 </script>
+
+<!-- Birthday Touch Modal -->
+<div class="mbk" id="mbday"><div class="modal msm">
+  <div class="mtitle">🎂 birthday touch</div>
+  <div id="bday-info" style="background:#fff8f0;border:1px solid #f0d0b0;border-radius:var(--r);padding:12px 14px;margin-bottom:16px">
+    <div id="bday-cname" style="font-size:16px;font-weight:600;margin-bottom:4px"></div>
+    <div id="bday-cdate" style="font-size:13px;color:#8a5010;margin-bottom:4px"></div>
+    <div id="bday-cphone" style="font-size:13px;color:var(--muted)"></div>
+  </div>
+  <div class="fr"><label class="fl">how did Becky reach out?</label>
+    <select class="fi" id="bd-method">
+      <option value="card" selected>handwritten card (mail)</option>
+      <option value="text">text message</option>
+      <option value="call">phone call</option>
+    </select>
+  </div>
+  <div class="fr"><label class="fl">note (optional)</label>
+    <textarea class="fi" id="bd-note" rows="2" placeholder="e.g. sent a birthday text, she called back!"></textarea>
+  </div>
+  <div class="mfoot">
+    <button class="btn btn-g" onclick="window.cm('mbday')">cancel</button>
+    <button class="btn btn-p" onclick="window.saveBdayTouch()">✓ log birthday touch</button>
+  </div>
+</div></div>
 </body>
 </html>
