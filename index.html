@@ -164,8 +164,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="pipeline" id="pl"></div>
   </div>
   <div id="vb" style="display:none">
-    <div class="bsec"><div class="bsec-title">🎂 upcoming (30 days) &amp; recent (7 days)</div><div class="bday-grid" id="b60"></div></div>
-    <div class="bsec"><div class="bsec-title" style="color:var(--muted)">this month</div><div class="bday-grid" id="bmo"></div></div>
+    <div class="bsec"><div class="bsec-title">🎂 birthdays — 30 days ahead &amp; 7 days past</div><div class="bday-grid" id="b60"></div></div>
+
   </div>
   <div id="vt" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
@@ -500,7 +500,7 @@ function renderBdays(){
     return (dbu(a.dob)||999)-(dbu(b.dob)||999);
   };
   const u60=contacts.filter(c=>bdayInWindow(c)).sort(sortFn);
-  const u30=contacts.filter(c=>{const d=dbu(c.dob);return d!==null&&d<=30;}).sort(sortFn);
+
   const mk=c=>{
     const d=dbu(c.dob),ds=dbsi(c.dob);
     let lbl='';
@@ -521,8 +521,8 @@ function renderBdays(){
     return s;
   };
   document.getElementById('b60').innerHTML=u60.length?u60.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None in the next 30 days</p>';
-  document.getElementById('bmo').innerHTML=u30.length?u30.map(mk).join(''):'<p style="color:var(--muted);font-size:13px">None this month</p>';
-  ['b60','bmo'].forEach(function(id){
+
+  ['b60'].forEach(function(id){
     var el=document.getElementById(id);
     if(el)el.onclick=function(e){var card=e.target.closest('[data-bid]');if(card)window.openBday(card.dataset.bid);};
   });
@@ -791,4 +791,3 @@ load();
 </div></div>
 </body>
 </html>
-
