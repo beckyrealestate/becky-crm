@@ -447,7 +447,7 @@ function renderContacts(){
     if(c.isSpouse)chips+='<span style="font-size:10px;background:#f0f8ff;color:#1a5da0;border-radius:20px;padding:2px 8px">spouse</span>';
     chips+='</div>';
     const cls=ts.p===0?'card ov':ts.p===1?'card ds':'card';
-    let card='<div class="'+cls+'">';
+    let card='<div class="'+cls+'" data-cid="'+c.id+'">';
     card+='<div class="ctop"><div class="av'+(ibd?' bd':'')+'">'+ini(c)+'</div>';
     card+='<div class="cinfo"><div class="cname">'+c.first+' '+c.last+'</div>'+chips+'</div></div>';
     card+='<div class="cdetails">';
@@ -457,10 +457,10 @@ function renderContacts(){
     card+=ll+fl(c)+'</div>';
     card+='<div class="ctouch"><span class="tl">last touch</span><span class="tv '+ts.cls+'">'+ts.label+'</span></div>';
     card+='<div class="cbtns">';
-    card+='<button class="cbtn" onclick="window.openEdit(\''+c.id+'\')">edit</button>';
-    card+='<button class="cbtn tc" onclick="window.openTouch(\''+c.id+'\')">log touch</button>';
-    card+='<button class="cbtn" onclick="window.openHist(\''+c.id+'\')">history</button>';
-    card+='<button class="cbtn dl" onclick="window.delC(\''+c.id+'\')">delete</button>';
+    card+='<button class="cbtn" onclick="event.stopPropagation();window.openEdit(\''+c.id+'\')"  style="z-index:2;position:relative">edit</button>';
+    card+='<button class="cbtn tc" onclick="event.stopPropagation();window.openTouch(\''+c.id+'\')" style="z-index:2;position:relative">log touch</button>';
+    card+='<button class="cbtn" onclick="event.stopPropagation();window.openHist(\''+c.id+'\')" style="z-index:2;position:relative">history</button>';
+    card+='<button class="cbtn dl" onclick="event.stopPropagation();window.delC(\''+c.id+'\')" style="z-index:2;position:relative">delete</button>';
     card+='</div>'+note+'</div>';
     out+=card;
   });
@@ -725,8 +725,12 @@ window.exportCSV=function(){
   const a=document.createElement('a');a.href=url;a.download='becky-sphere-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
 };
 
-['mc','mt','mh','ml','mtr','mbday'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});});
+['mc','mt','mh','ml','mtr','mbday','mdet'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});});
 document.getElementById('si').addEventListener('input',()=>renderContacts());
+document.getElementById('cg').addEventListener('click',function(e){
+  const card=e.target.closest('[data-cid]');
+  if(card&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='SELECT')window.openDetail(card.dataset.cid);
+});
 document.getElementById('sf').addEventListener('change',()=>renderContacts());
 
 
@@ -762,6 +766,38 @@ window.saveBdayTouch = async function() {
   render();
 };
 
+
+window.openDetail = function(id) {
+  const c = contacts.find(x => x.id === id); if(!c) return;
+  document.getElementById("det-av").textContent = ini(c);
+  document.getElementById("det-name").textContent = c.first + " " + c.last;
+  const sl = {personal:"personal",family:"family",friend:"friend",neighbor:"neighbor",coworker:"work","hr-block":"HR Block","past-client":"past client",referral:"referral",other:"other"};
+  let chips = "<span class=\"cseg seg-"+(c.seg||"other")+"\">"+(sl[c.seg]||"other")+"</span>";
+  if(c.isSpouse) chips += "<span style=\"font-size:10px;background:#f0f8ff;color:#1a5da0;border-radius:20px;padding:2px 8px\">spouse</span>";
+  document.getElementById("det-chips").innerHTML = chips;
+  document.getElementById("det-phone").innerHTML = c.phone ? "&#128222; <a href=\"tel:"+c.phone+"\" style=\"color:#1a5da0\">"+c.phone+"</a>" : "";
+  document.getElementById("det-email").innerHTML = c.email ? "&#9993; <a href=\"mailto:"+c.email+"\" style=\"color:#1a5da0\">"+c.email+"</a>" : "";
+  const addr = [c.addr1,c.addr2,c.city,c.state,c.zip].filter(Boolean).join(", ");
+  document.getElementById("det-addr").textContent = addr ? "&#128205; " + addr : "";
+  document.getElementById("det-dob").textContent = c.dob ? "&#127874; " + c.dob : "";
+  document.getElementById("det-spouse").textContent = c.spouse ? "&#128107; " + c.spouse : "";
+  const fu = document.getElementById("det-followup");
+  if(c.followupDate) {
+    fu.style.display = "block";
+    const d = new Date(c.followupDate+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+    fu.textContent = "&#128197; Follow up: "+d+(c.followupNote?" — "+c.followupNote:"");
+  } else { fu.style.display = "none"; }
+  const no = document.getElementById("det-notes");
+  if(c.notes){ no.style.display="block"; no.textContent=c.notes; } else { no.style.display="none"; }
+  const hist = c.history||[];
+  document.getElementById("det-hist").innerHTML = hist.length
+    ? [...hist].reverse().map(e=>"<div class=\"hentry\"><div class=\"hmeta\"><span class=\"hdate\">"+new Date(e.date).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})+"</span><span class=\"hmethod\">"+e.method+"</span></div>"+(e.note?"<div class=\"hnote\">"+e.note+"</div>":"")+"</div>").join("")
+    : "<p style=\"font-size:13px;color:var(--muted)\">No touches logged yet.</p>";
+  document.getElementById("det-touch-btn").onclick = function(){ window.cm("mdet"); window.openTouch(id); };
+  document.getElementById("det-edit-btn").onclick = function(){ window.cm("mdet"); window.openEdit(id); };
+  document.getElementById("mdet").classList.add("open");
+};
+
 load();
 </script>
 
@@ -787,6 +823,35 @@ load();
   <div class="mfoot">
     <button class="btn btn-g" onclick="window.cm('mbday')">cancel</button>
     <button class="btn btn-p" onclick="window.saveBdayTouch()">✓ log birthday touch</button>
+  </div>
+</div></div>
+
+<!-- Contact Detail Modal -->
+<div class="mbk" id="mdet"><div class="modal mlg">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;gap:12px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div id="det-av" style="width:48px;height:48px;border-radius:50%;background:var(--em-l);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px;color:var(--em-d);flex-shrink:0"></div>
+      <div><div id="det-name" style="font-size:18px;font-weight:600"></div><div id="det-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px"></div></div>
+    </div>
+    <button onclick="window.cm('mdet')" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);flex-shrink:0">&#x2715;</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
+    <div id="det-phone" style="font-size:14px;color:#1a1a1a"></div>
+    <div id="det-email" style="font-size:14px;color:#1a1a1a;word-break:break-all"></div>
+    <div id="det-addr" style="font-size:14px;color:#1a1a1a;grid-column:1/-1"></div>
+    <div id="det-dob" style="font-size:13px;color:var(--muted)"></div>
+    <div id="det-spouse" style="font-size:13px;color:var(--muted)"></div>
+  </div>
+  <div id="det-followup" style="display:none;background:#fff8f0;border:1px solid #f0d0b0;border-radius:var(--r);padding:10px 12px;margin-bottom:1rem;font-size:13px"></div>
+  <div id="det-notes" style="display:none;background:#f9fafb;border-radius:var(--r);padding:10px 12px;margin-bottom:1rem;font-size:13px;color:var(--muted);font-style:italic;border-left:3px solid var(--em-b)"></div>
+  <div style="border-top:1px solid #f0f0f0;padding-top:1rem;margin-bottom:0.75rem">
+    <div style="font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">touch history</div>
+    <div id="det-hist" style="max-height:180px;overflow-y:auto"></div>
+  </div>
+  <div class="mfoot" style="border-top:1px solid #f0f0f0;padding-top:1rem;margin-top:0">
+    <button class="btn btn-g" onclick="window.cm('mdet')">close</button>
+    <button class="btn btn-g" id="det-touch-btn">log touch</button>
+    <button class="btn btn-p" id="det-edit-btn">edit contact</button>
   </div>
 </div></div>
 </body>
