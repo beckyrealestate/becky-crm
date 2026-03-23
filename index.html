@@ -114,6 +114,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .empty{text-align:center;padding:3rem 1rem;color:var(--muted);grid-column:1/-1}
 @media(max-width:700px){.stats-row{grid-template-columns:repeat(3,1fr)}.pipeline{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.pipeline{grid-template-columns:1fr}}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a7a52;color:white;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:999;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -610,12 +613,12 @@ window.saveContact=async function(){
     notes:document.getElementById('e-notes').value.trim()};
   if(eid){await fup('contacts',eid,d);const i=contacts.findIndex(c=>c.id===eid);if(i>=0)contacts[i]={...contacts[i],...d};}
   else{const nid=await fad('contacts',{...d,lastTouch:null,history:[],added:new Date().toISOString()});contacts.push({id:nid,...d,lastTouch:null,history:[],added:new Date().toISOString()});}
-  window.cm('mc');render();
+  window.cm('mc');render();toast(eid?'Contact updated ✓':'Contact saved ✓');
 };
 
 window.delC=async function(id){
   if(!confirm('Remove this contact?'))return;
-  await fdl('contacts',id);contacts=contacts.filter(c=>c.id!==id);render();
+  await fdl('contacts',id);contacts=contacts.filter(c=>c.id!==id);render();toast('Contact removed');
 };
 
 window.openTouch=function(id){
@@ -631,7 +634,7 @@ window.saveTouch=async function(){
   const history=[...(contacts[i].history||[]),e];
   await fup('contacts',tid,{lastTouch:e.date,history,followupDate:'',followupNote:''});
   contacts[i].lastTouch=e.date;contacts[i].history=history;contacts[i].followupDate='';contacts[i].followupNote='';
-  window.cm('mt');render();
+  window.cm('mt');render();toast('Touch logged ✓');
 };
 
 window.openHist=function(id){
@@ -652,12 +655,12 @@ window.openAddLead=function(stage){
 window.saveLead=async function(){
   const d={contactName:document.getElementById('lc').value,stage:document.getElementById('ls-sel').value,type:document.getElementById('lt').value,note:document.getElementById('ln').value.trim()};
   const nid=await fad('leads',d);leads.push({id:nid,...d});
-  window.cm('ml');renderStats();if(tab==='leads')renderPipeline();
+  window.cm('ml');renderStats();if(tab==='leads')renderPipeline();toast('Lead added ✓');
 };
 
 window.pStage=async function(id,stage){
   const l=leads.find(x=>x.id===id);if(!l)return;
-  l.stage=stage;await fup('leads',id,{stage});renderStats();renderPipeline();
+  l.stage=stage;await fup('leads',id,{stage});renderStats();renderPipeline();toast('Stage updated ✓');
 };
 
 window.pDel=async function(id){
@@ -708,7 +711,7 @@ window.saveTrans=async function(){
     st:parseFloat(document.getElementById('tt-st').value)||10,no:document.getElementById('tt-no').value.trim()};
   if(tid2){await fup('transactions',tid2,d);const i=transactions.findIndex(x=>x.id===tid2);if(i>=0)transactions[i]={...transactions[i],...d};}
   else{const nid=await fad('transactions',{...d,added:new Date().toISOString()});transactions.push({id:nid,...d,added:new Date().toISOString()});}
-  window.cm('mtr');renderTrans();
+  window.cm('mtr');renderTrans();toast('Transaction saved ✓');
 };
 
 window.delTrans=async function(id){
@@ -763,7 +766,7 @@ window.saveBdayTouch = async function() {
   contacts[i].lastTouch = e.date;
   contacts[i].history = history;
   window.cm('mbday');
-  render();
+  render();toast('Birthday touch logged 🎂');
 };
 
 
@@ -797,6 +800,14 @@ window.openDetail = function(id) {
   document.getElementById("det-edit-btn").onclick = function(){ window.cm("mdet"); window.openEdit(id); };
   document.getElementById("mdet").classList.add("open");
 };
+
+function toast(msg){
+  const el=document.getElementById("toast");
+  el.textContent=msg;
+  el.classList.add("show");
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(()=>el.classList.remove("show"),2500);
+}
 
 load();
 </script>
@@ -854,5 +865,6 @@ load();
     <button class="btn btn-p" id="det-edit-btn">edit contact</button>
   </div>
 </div></div>
+<div class="toast" id="toast"></div>
 </body>
 </html>
