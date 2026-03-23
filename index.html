@@ -150,7 +150,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div id="vc">
     <div class="toolbar">
-      <input class="search-box" id="si" type="text" placeholder="search name, phone, city, notes...">
+      <div style="position:relative;flex:1;min-width:200px">
+        <input class="search-box" id="si" type="text" placeholder="search name, phone, city, notes..." style="width:100%;padding-right:36px">
+        <button id="si-clear" onclick="window.clearSearch()" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted);line-height:1">&#x2715;</button>
+      </div>
       <select class="fsel" id="sf">
         <option value="">all segments</option>
         <option value="personal">personal</option><option value="family">family</option><option value="friend">friend</option>
@@ -710,7 +713,7 @@ window.exportCSV=function(){
 };
 
 ['mc','mt','ml','mtr','mbday','mdet','mfu'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});});
-document.getElementById('si').addEventListener('input',()=>renderContacts());
+document.getElementById('si').addEventListener('input',function(){document.getElementById('si-clear').style.display=this.value?'block':'none';renderContacts();});
 document.getElementById('cg').addEventListener('click',function(e){
   const card=e.target.closest('[data-cid]');
   if(card&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='SELECT')window.openDetail(card.dataset.cid);
@@ -821,6 +824,7 @@ window.clearFollowup = async function(id) {
   if(document.getElementById("mdet").classList.contains("open")) window.openDetail(id);
 };
 
+window.clearSearch=function(){document.getElementById('si').value='';document.getElementById('si-clear').style.display='none';renderContacts();document.getElementById('si').focus();};
 load();
 </script>
 
