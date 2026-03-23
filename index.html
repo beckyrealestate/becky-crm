@@ -456,8 +456,6 @@ function renderContacts(){
     card+='<div class="cbtns">';
     card+='<button class="cbtn" onclick="event.stopPropagation();window.openEdit(\''+c.id+'\')"  style="z-index:2;position:relative">edit</button>';
     card+='<button class="cbtn tc" onclick="event.stopPropagation();window.openTouch(\''+c.id+'\')" style="z-index:2;position:relative">log touch</button>';
-    card+='<button class="cbtn" onclick="event.stopPropagation();window.openHist(\''+c.id+'\')" style="z-index:2;position:relative">details</button>';
-    card+='<button class="cbtn dl" onclick="event.stopPropagation();window.delC(\''+c.id+'\')" style="z-index:2;position:relative">delete</button>';
     card+='</div>'+note+'</div>';
     out+=card;
   });
