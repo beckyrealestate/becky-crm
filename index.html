@@ -133,18 +133,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="topbar-btns">
     <span class="sync-dot" id="sdot"></span>
     <span class="sync-lbl" id="slbl">loading...</span>
-    <button class="tbtn" onclick="window.exportCSV()">⬇ CSV</button>
     <button class="tbtn" onclick="window.openAdd()">+ contact</button>
   </div>
 </div>
 <div class="main">
   <div class="stats-row" id="stats-row"></div>
-  <div class="nav-tabs">
+  <div style="text-align:right;margin-bottom:8px;margin-top:-4px">
+    <button onclick="window.exportCSV()" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--muted);text-decoration:underline">⬇ export CSV</button>
+  </div>
+  <diclass="nav-tabs">
     <button class="ntab active" id="tab-all" onclick="window.setTab('all',this)">all contacts</button>
-    <button class="ntab" id="tab-needs" onclick="window.setTab('needs',this)">needs touch <span class="bdg br" id="b-needs">0</span></button>
-    <button class="ntab" id="tab-leads" onclick="window.setTab('leads',this)">hot leads <span class="bdg bp" id="b-leads">0</span></button>
-    <button class="ntab" id="tab-bday" onclick="window.setTab('bday',this)">birthdays <span class="bdg bb" id="b-bday">0</span></button>
     <button class="ntab" id="tab-rec" onclick="window.setTab('recent',this)">recently added</button>
+    <button class="ntab" id="tab-leads" onclick="window.setTab('leads',this)">pipeline</button>
+    <button class="ntab" id="tab-bday" onclick="window.setTab('bday',this)">birthdays</button>
     <button class="ntab" id="tab-trans" onclick="window.setTab('trans',this)">💰 transactions</button>
   </div>
   <div id="vc">
@@ -215,10 +216,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <option value="30">monthly</option><option value="60">every 2 months</option>
       <option value="90" selected>quarterly</option><option value="180">every 6 months</option><option value="365">annually</option>
     </select>
-  </div>
-  <div class="fr2">
-    <div><label class="fl">specific follow-up date</label><input class="fi" id="e-fd" type="date"></div>
-    <div><label class="fl">follow-up reason</label><input class="fi" id="e-fn" placeholder="e.g. call about listing"></div>
   </div>
   <div class="fr"><label class="fl">notes</label><textarea class="fi" id="e-notes" rows="3"></textarea></div>
   <div class="mfoot">
@@ -424,9 +421,7 @@ function renderStats(){
   h+='<div class="stat" onclick="window.setTab(\'bday\',document.getElementById(\'tab-bday\'))"><div class="stat-label">bdays</div><div class="stat-value sv-b">'+bc+'</div></div>';
   h+='<div class="stat" onclick="window.setTab(\'leads\',document.getElementById(\'tab-leads\'))"><div class="stat-label">active leads</div><div class="stat-value sv-p">'+lc+'</div></div>';
   document.getElementById('stats-row').innerHTML=h;
-  document.getElementById('b-needs').textContent=nt;
-  document.getElementById('b-leads').textContent=lc;
-  document.getElementById('b-bday').textContent=bc;
+
 }
 
 function renderContacts(){
@@ -439,9 +434,9 @@ function renderContacts(){
     const ll=c.history&&c.history.length?'<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:2px">'+c.history[c.history.length-1].method+': '+(c.history[c.history.length-1].note||'').substring(0,45)+'</div>':'';
     const addr=[c.addr1,c.city,c.state,c.zip].filter(Boolean).join(', ');
     let chips='<div class="chips"><span class="cseg seg-'+(c.seg||'other')+'">'+segL(c.seg)+'</span>';
-    if(c.spouse)chips+='<span class="sp-chip">+ '+c.spouse+'</span>';
+    
     if(ibd)chips+='<span class="bd-chip">🎂 '+(d===0?'today!':d===1?'tomorrow':d+'d')+'</span>';
-    if(c.isSpouse)chips+='<span style="font-size:10px;background:#f0f8ff;color:#1a5da0;border-radius:20px;padding:2px 8px">spouse</span>';
+    
     chips+='</div>';
     const cls=ts.p===0?'card ov':ts.p===1?'card ds':'card';
     let card='<div class="'+cls+'" data-cid="'+c.id+'">';
@@ -456,6 +451,7 @@ function renderContacts(){
     card+='<div class="cbtns">';
     card+='<button class="cbtn" onclick="event.stopPropagation();window.openEdit(\''+c.id+'\')"  style="z-index:2;position:relative">edit</button>';
     card+='<button class="cbtn tc" onclick="event.stopPropagation();window.openTouch(\''+c.id+'\')" style="z-index:2;position:relative">log touch</button>';
+    card+='<button class="cbtn" onclick="event.stopPropagation();window.openFollowup(\''+c.id+'\')" style="z-index:2;position:relative">+ follow-up</button>';
     card+='</div>'+note+'</div>';
     out+=card;
   });
@@ -558,7 +554,7 @@ window.setTab=function(t,el){
   tab=t;
   document.querySelectorAll('.ntab').forEach(n=>n.classList.remove('active'));
   const sub=['needs','never','pastdue','soon'];
-  if(sub.includes(t))document.getElementById('tab-needs').classList.add('active');
+  if(sub.includes(t))document.getElementById('tab-all').classList.add('active');
   else if(el)el.classList.add('active');
   document.getElementById('vc').style.display=(t==='leads'||t==='bday'||t==='trans')?'none':'block';
   document.getElementById('vl').style.display=t==='leads'?'block':'none';
@@ -588,7 +584,6 @@ window.openEdit=function(id){
   document.getElementById('e-zip').value=c.zip||'';document.getElementById('e-spouse').value=c.spouse||'';
   document.getElementById('e-dob').value=c.dob||'';document.getElementById('e-seg').value=c.seg||'other';
   document.getElementById('e-tg').value=c.touchGoal||'90';document.getElementById('e-notes').value=c.notes||'';
-  document.getElementById('e-fd').value=c.followupDate||'';document.getElementById('e-fn').value=c.followupNote||'';
   document.getElementById('mc').classList.add('open');
 };
 
@@ -714,7 +709,7 @@ window.exportCSV=function(){
   const a=document.createElement('a');a.href=url;a.download='becky-sphere-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
 };
 
-['mc','mt','ml','mtr','mbday','mdet'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});});
+['mc','mt','ml','mtr','mbday','mdet','mfu'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});});
 document.getElementById('si').addEventListener('input',()=>renderContacts());
 document.getElementById('cg').addEventListener('click',function(e){
   const card=e.target.closest('[data-cid]');
@@ -762,7 +757,7 @@ window.openDetail = function(id) {
   document.getElementById("det-name").textContent = c.first + " " + c.last;
   const sl = {personal:"personal",family:"family",friend:"friend",neighbor:"neighbor",coworker:"work","hr-block":"HR Block","past-client":"past client",referral:"referral",other:"other"};
   let chips = "<span class=\"cseg seg-"+(c.seg||"other")+"\">"+(sl[c.seg]||"other")+"</span>";
-  if(c.isSpouse) chips += "<span style=\"font-size:10px;background:#f0f8ff;color:#1a5da0;border-radius:20px;padding:2px 8px\">spouse</span>";
+  if(c.isSpouse) chips += "<span style=\"font-size:10px;color:var(--muted)\">spouse of "+c.spouse+"</span>";
   document.getElementById("det-chips").innerHTML = chips;
   document.getElementById("det-phone").innerHTML = c.phone ? "📞 <a href=\"tel:"+c.phone+"\" style=\"color:#1a5da0\">"+c.phone+"</a>" : "";
   document.getElementById("det-email").innerHTML = c.email ? "✉ <a href=\"mailto:"+c.email+"\" style=\"color:#1a5da0\">"+c.email+"</a>" : "";
@@ -782,6 +777,7 @@ window.openDetail = function(id) {
   document.getElementById("det-hist").innerHTML = hist.length
     ? [...hist].reverse().map(e=>"<div class=\"hentry\"><div class=\"hmeta\"><span class=\"hdate\">"+new Date(e.date).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})+"</span><span class=\"hmethod\">"+e.method+"</span></div>"+(e.note?"<div class=\"hnote\">"+e.note+"</div>":"")+"</div>").join("")
     : "<p style=\"font-size:13px;color:var(--muted)\">No touches logged yet.</p>";
+  document.getElementById("det-fu-btn").onclick = function(){ window.cm("mdet"); window.openFollowup(id); };
   document.getElementById("det-touch-btn").onclick = function(){ window.cm("mdet"); window.openTouch(id); };
   document.getElementById("det-edit-btn").onclick = function(){ window.cm("mdet"); window.openEdit(id); };
   document.getElementById("mdet").classList.add("open");
@@ -794,6 +790,36 @@ function toast(msg){
   clearTimeout(window._toastTimer);
   window._toastTimer=setTimeout(()=>el.classList.remove("show"),2500);
 }
+
+
+let fuId = null;
+window.openFollowup = function(id) {
+  fuId = id;
+  const c = contacts.find(x => x.id === id); if(!c) return;
+  document.getElementById("fu-name").textContent = c.first + " " + c.last;
+  document.getElementById("fu-date").value = c.followupDate || "";
+  document.getElementById("fu-note").value = c.followupNote || "";
+  document.getElementById("fu-clear-btn").onclick = function(){ window.clearFollowup(id); };
+  document.getElementById("mfu").classList.add("open");
+};
+window.saveFollowup = async function() {
+  if(!fuId) return;
+  const date = document.getElementById("fu-date").value;
+  const note = document.getElementById("fu-note").value.trim();
+  const i = contacts.findIndex(c => c.id === fuId); if(i<0) return;
+  await fup("contacts", fuId, {followupDate: date, followupNote: note});
+  contacts[i].followupDate = date; contacts[i].followupNote = note;
+  window.cm("mfu"); render(); toast("Follow-up set ✓");
+  // Refresh detail modal if open
+  if(document.getElementById("mdet").classList.contains("open")) window.openDetail(fuId);
+};
+window.clearFollowup = async function(id) {
+  const i = contacts.findIndex(c => c.id === id); if(i<0) return;
+  await fup("contacts", id, {followupDate: "", followupNote: ""});
+  contacts[i].followupDate = ""; contacts[i].followupNote = "";
+  window.cm("mfu"); render(); toast("Follow-up cleared");
+  if(document.getElementById("mdet").classList.contains("open")) window.openDetail(id);
+};
 
 load();
 </script>
@@ -848,7 +874,21 @@ load();
   <div class="mfoot" style="border-top:1px solid #f0f0f0;padding-top:1rem;margin-top:0">
     <button class="btn btn-g" onclick="window.cm('mdet')">close</button>
     <button class="btn btn-g" id="det-touch-btn">log touch</button>
+    <button class="btn btn-g" id="det-fu-btn">+ follow-up</button>
     <button class="btn btn-p" id="det-edit-btn">edit contact</button>
+  </div>
+</div></div>
+
+<!-- Follow-up Modal -->
+<div class="mbk" id="mfu"><div class="modal msm">
+  <div class="mtitle">set follow-up</div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:13px" id="fu-name"></p>
+  <div class="fr"><label class="fl">follow-up date</label><input class="fi" id="fu-date" type="date"></div>
+  <div class="fr"><label class="fl">reason / reminder</label><input class="fi" id="fu-note" placeholder="e.g. call about listing, check in after baby"></div>
+  <div class="mfoot">
+    <button class="btn btn-g" id="fu-clear-btn">clear follow-up</button>
+    <button class="btn btn-g" onclick="window.cm('mfu')">cancel</button>
+    <button class="btn btn-p" onclick="window.saveFollowup()">save</button>
   </div>
 </div></div>
 <div class="toast" id="toast"></div>
