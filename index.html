@@ -245,12 +245,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div></div>
 
-<!-- History Modal -->
-<div class="mbk" id="mh"><div class="modal mlg">
-  <div class="mtitle" id="h-ttl">contact history</div>
-  <div id="h-body"></div>
-  <div class="mfoot"><button class="btn btn-g" onclick="window.cm('mh')">close</button></div>
-</div></div>
 
 <!-- Lead Modal -->
 <div class="mbk" id="ml"><div class="modal msm">
@@ -462,7 +456,7 @@ function renderContacts(){
     card+='<div class="cbtns">';
     card+='<button class="cbtn" onclick="event.stopPropagation();window.openEdit(\''+c.id+'\')"  style="z-index:2;position:relative">edit</button>';
     card+='<button class="cbtn tc" onclick="event.stopPropagation();window.openTouch(\''+c.id+'\')" style="z-index:2;position:relative">log touch</button>';
-    card+='<button class="cbtn" onclick="event.stopPropagation();window.openHist(\''+c.id+'\')" style="z-index:2;position:relative">history</button>';
+    card+='<button class="cbtn" onclick="event.stopPropagation();window.openHist(\''+c.id+'\')" style="z-index:2;position:relative">details</button>';
     card+='<button class="cbtn dl" onclick="event.stopPropagation();window.delC(\''+c.id+'\')" style="z-index:2;position:relative">delete</button>';
     card+='</div>'+note+'</div>';
     out+=card;
@@ -637,13 +631,7 @@ window.saveTouch=async function(){
   window.cm('mt');render();toast('Touch logged ✓');
 };
 
-window.openHist=function(id){
-  hid=id;const c=contacts.find(x=>x.id===id);if(!c)return;
-  document.getElementById('h-ttl').textContent=c.first+' '+c.last+' — contact history';
-  const h=c.history||[];
-  document.getElementById('h-body').innerHTML=h.length?[...h].reverse().map(e=>'<div class="hentry"><div class="hmeta"><span class="hdate">'+new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'</span><span class="hmethod">'+e.method+'</span></div>'+(e.note?'<div class="hnote">'+e.note+'</div>':'')+'</div>').join(''):'<p style="font-size:13px;color:var(--muted);padding:8px 0">No touches logged yet.</p>';
-  document.getElementById('mh').classList.add('open');
-};
+window.openHist=function(id){ window.openDetail(id); };
 
 window.openAddLead=function(stage){
   stage=stage||'aware';
@@ -728,7 +716,7 @@ window.exportCSV=function(){
   const a=document.createElement('a');a.href=url;a.download='becky-sphere-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
 };
 
-['mc','mt','mh','ml','mtr','mbday','mdet'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});});
+['mc','mt','ml','mtr','mbday','mdet'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)window.cm(id);});});
 document.getElementById('si').addEventListener('input',()=>renderContacts());
 document.getElementById('cg').addEventListener('click',function(e){
   const card=e.target.closest('[data-cid]');
@@ -856,7 +844,7 @@ load();
   <div id="det-followup" style="display:none;background:#fff8f0;border:1px solid #f0d0b0;border-radius:var(--r);padding:10px 12px;margin-bottom:1rem;font-size:13px"></div>
   <div id="det-notes" style="display:none;background:#f9fafb;border-radius:var(--r);padding:10px 12px;margin-bottom:1rem;font-size:13px;color:var(--muted);font-style:italic;border-left:3px solid var(--em-b)"></div>
   <div style="border-top:1px solid #f0f0f0;padding-top:1rem;margin-bottom:0.75rem">
-    <div style="font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">touch history</div>
+    <div style="font-size:12px;font-weight:600;color:var(--em-d);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">touch history</div>
     <div id="det-hist" style="max-height:180px;overflow-y:auto"></div>
   </div>
   <div class="mfoot" style="border-top:1px solid #f0f0f0;padding-top:1rem;margin-top:0">
