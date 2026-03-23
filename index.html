@@ -775,17 +775,17 @@ window.openDetail = function(id) {
   let chips = "<span class=\"cseg seg-"+(c.seg||"other")+"\">"+(sl[c.seg]||"other")+"</span>";
   if(c.isSpouse) chips += "<span style=\"font-size:10px;background:#f0f8ff;color:#1a5da0;border-radius:20px;padding:2px 8px\">spouse</span>";
   document.getElementById("det-chips").innerHTML = chips;
-  document.getElementById("det-phone").innerHTML = c.phone ? "&#128222; <a href=\"tel:"+c.phone+"\" style=\"color:#1a5da0\">"+c.phone+"</a>" : "";
-  document.getElementById("det-email").innerHTML = c.email ? "&#9993; <a href=\"mailto:"+c.email+"\" style=\"color:#1a5da0\">"+c.email+"</a>" : "";
+  document.getElementById("det-phone").innerHTML = c.phone ? "📞 <a href=\"tel:"+c.phone+"\" style=\"color:#1a5da0\">"+c.phone+"</a>" : "";
+  document.getElementById("det-email").innerHTML = c.email ? "✉ <a href=\"mailto:"+c.email+"\" style=\"color:#1a5da0\">"+c.email+"</a>" : "";
   const addr = [c.addr1,c.addr2,c.city,c.state,c.zip].filter(Boolean).join(", ");
-  document.getElementById("det-addr").textContent = addr ? "&#128205; " + addr : "";
-  document.getElementById("det-dob").textContent = c.dob ? "&#127874; " + c.dob : "";
-  document.getElementById("det-spouse").textContent = c.spouse ? "&#128107; " + c.spouse : "";
+  document.getElementById("det-addr").innerHTML = addr ? "📍 " + addr : "";
+  document.getElementById("det-dob").innerHTML = c.dob ? "🎂 " + c.dob : "";
+  document.getElementById("det-spouse").innerHTML = c.spouse ? "👫 " + c.spouse : "";
   const fu = document.getElementById("det-followup");
   if(c.followupDate) {
     fu.style.display = "block";
     const d = new Date(c.followupDate+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
-    fu.textContent = "&#128197; Follow up: "+d+(c.followupNote?" — "+c.followupNote:"");
+    fu.innerHTML = "📅 Follow up: "+d+(c.followupNote?" — "+c.followupNote:"");
   } else { fu.style.display = "none"; }
   const no = document.getElementById("det-notes");
   if(c.notes){ no.style.display="block"; no.textContent=c.notes; } else { no.style.display="none"; }
